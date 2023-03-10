@@ -15,7 +15,7 @@ const Drawer = createDrawerNavigator();
 const CustomDrawer = props => {
   const { setIsLoggedIn, profile } = useLogin();
   return (
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1, backgroundColor: '#070a2d'}}>
       <DrawerContentScrollView {...props}>
         <View
           style={{
@@ -23,7 +23,7 @@ const CustomDrawer = props => {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: 20,
-            backgroundColor: '#f6f6f6',
+            backgroundColor: '#f27b41',
             marginBottom: 20,
           }}
         >
@@ -41,7 +41,7 @@ const CustomDrawer = props => {
           right: 0,
           left: 0,
           bottom: 50,
-          backgroundColor: '#f6f6f6',
+          backgroundColor: '#f27b41',
           padding: 20,
         }}
         onPress={() => setIsLoggedIn(false)}
@@ -65,6 +65,10 @@ const DrawerNavigator = () => {
         headerTitle: '',
       }}
       drawerContent={props => <CustomDrawer {...props} />}
+      drawerContentOptions= {{
+         activeTintColor :'#f27b41',
+         inactiveTintColor :'#f27b41',
+      }}
     >
       <Drawer.Screen component={Home} name='Home' />
       <Drawer.Screen component={Connection} name='Connection'/>

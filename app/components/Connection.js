@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   View,
   Animated,
   Dimensions,
   Text,
-  TextInput,
 } from 'react-native';
 import client from '../api/client';
 import { useLogin } from '../context/LoginProvider';

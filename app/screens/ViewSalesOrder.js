@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
-import { Card, ListItem, Button, Icon, Divider  } from 'react-native-elements'
+import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
 import FormInput from '../components/FormInput';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TextInput } from 'react-native';
+import { StyleSheet, Text, } from 'react-native';
 import client from '../api/client';
 import { useLogin } from '../context/LoginProvider';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';

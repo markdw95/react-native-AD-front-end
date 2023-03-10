@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, Dimensions } from 'react-native';
-import { Card } from 'react-native-elements';
+import { View, StyleSheet, Text, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { Container, Cover, Image, CSTitle, Content, Wrapper, Caption, Subtitle } from '../components/Card_Styles';
 import FormContainer from '../components/FormContainer';

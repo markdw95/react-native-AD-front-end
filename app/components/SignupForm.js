@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-
+import {StyleSheet } from 'react-native';
 import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
-import { StackActions } from '@react-navigation/native';
 import { useLogin } from '../context/LoginProvider';
-
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
 import client from '../api/client';
 
 const validationSchema = Yup.object({
