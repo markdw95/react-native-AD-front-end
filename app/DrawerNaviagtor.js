@@ -63,6 +63,7 @@ const DrawerNavigator = () => {
           shadowOpacity: 0,
         },
         headerTitle: '',
+        headerTintColor: '#f27b41'
       }}
       drawerContent={props => <CustomDrawer {...props} />}
       drawerContentOptions= {{

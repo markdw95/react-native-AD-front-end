@@ -135,10 +135,20 @@ const CreateSalesOrder = () => {
         LineNumber: 1 
       }
 
+      var statusError = true;
+
+      if (statusError)
+      {
+        var errorMessage = "Status code: " + "500" + "\n" + "Error occured." + "\n";
+        setError(errorMessage);
+        throw error("Failed to make order");
+      }
+
       //Redirect to new screen -> send in sales order information
       navigation.navigate("CreateSalesOrderLine", {salesOrderData: salesOrderData});
 
     } catch (error) {
+      error = "Failed order creation";
     }
 };
 
