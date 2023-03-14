@@ -48,100 +48,112 @@ const CreateSalesOrder = () => {
 
   const submitForm = async () => {
     try {
-    //   //Make call to getUserConnectionInfo (send in email)
-    //   const getConnectionInfo = {email: profile.user.email};
+      //Make call to getUserConnectionInfo (send in email)
+      const getConnectionInfo = {email: profile.user.email};
 
-    //   const res = await client.post('/getConnectionInfo', getConnectionInfo, {
-    //     headers: {
-    //       Accept: 'application/json',
-    //       authorization: `JWT ${profile.token}`,
-    //     },
-    //   });
+      const res = await client.post('/getConnectionInfo', getConnectionInfo, {
+        headers: {
+          Accept: 'application/json',
+          authorization: `JWT ${profile.token}`,
+        },
+      });
 
-    //   const D365ResourceURL   = res.data.formData.D365ResourceURL;
-    //   const AuthHostURL       = res.data.formData.AuthHostURL;
-    //   const AuthClientId      = res.data.formData.AuthClientId;
-    //   const AuthClientSecret  = res.data.formData.AuthClientSecret;
-    //   const AuthToken         = res.data.formData.AuthToken;
-    //   const AuthTokenExp      = res.data.formData.AuthTokenExp;
+      const D365ResourceURL   = res.data.formData.D365ResourceURL;
+      const AuthHostURL       = res.data.formData.AuthHostURL;
+      const AuthClientId      = res.data.formData.AuthClientId;
+      const AuthClientSecret  = res.data.formData.AuthClientSecret;
+      const AuthToken         = res.data.formData.AuthToken;
+      const AuthTokenExp      = res.data.formData.AuthTokenExp;
 
-    //   const currentTimeSeconds = new Date().getTime() / 1000;
+      const currentTimeSeconds = new Date().getTime() / 1000;
 
-    //   var userAuthToken;
+      var userAuthToken;
 
-    //   //Check auth token, if expired get new token and update token in data base (updateUserConnectionToken)
-    //   if (AuthTokenExp == '' || AuthTokenExp < currentTimeSeconds)
-    //   {
-    //       //Set up new axios client based on connection info
-    //        var formdata = new FormData();
-    //        formdata.append("resource", D365ResourceURL);
-    //        formdata.append("client_id", AuthClientId);
-    //        formdata.append("client_secret", AuthClientSecret);
-    //        formdata.append("grant_type", "client_credentials")
+      //Check auth token, if expired get new token and update token in data base (updateUserConnectionToken)
+      if (AuthTokenExp == '' || AuthTokenExp < currentTimeSeconds)
+      {
+          //Set up new axios client based on connection info
+           var formdata = new FormData();
+           formdata.append("resource", D365ResourceURL);
+           formdata.append("client_id", AuthClientId);
+           formdata.append("client_secret", AuthClientSecret);
+           formdata.append("grant_type", "client_credentials")
 
-    //        const dynamicRes = await axios({
-    //          method: "post",
-    //          url: AuthHostURL,
-    //          data: formdata,
-    //          headers: { "Content-Type": "multipart/form-data" },
-    //        })
+           const dynamicRes = await axios({
+             method: "post",
+             url: AuthHostURL,
+             data: formdata,
+             headers: { "Content-Type": "multipart/form-data" },
+           })
 
-    //        userAuthToken = dynamicRes.data.access_token;
+           userAuthToken = dynamicRes.data.access_token;
 
-    //        var updatedTokenExp = +currentTimeSeconds + +dynamicRes.data.expires_in;
+           var updatedTokenExp = +currentTimeSeconds + +dynamicRes.data.expires_in;
 
-    //        const updateUserConnectionToken = {email: profile.user.email, AuthTokenExp: updatedTokenExp, AuthToken: userAuthToken};
+           const updateUserConnectionToken = {email: profile.user.email, AuthTokenExp: updatedTokenExp, AuthToken: userAuthToken};
 
-    //        const updatedTokenRes = await client.post('/updateUserConnectionToken', updateUserConnectionToken, {
-    //         headers: {
-    //           Accept: 'application/json',
-    //           authorization: `JWT ${profile.token}`,
-    //         },
-    //       });
+           const updatedTokenRes = await client.post('/updateUserConnectionToken', updateUserConnectionToken, {
+            headers: {
+              Accept: 'application/json',
+              authorization: `JWT ${profile.token}`,
+            },
+          });
 
-    //   }
-    //   else
-    //   {
-    //     userAuthToken = AuthToken;
-    //   }
-
-    //   //Make call to D365 to get sales order header information
-    //   const postSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2";
-
-    //   const postSalesOrderHeaderBody = {
-    //     "OrderingCustomerAccountNumber": customerNumber.CustomerNumber
-    // }
-    
-    //   userAuthToken = "Bearer " + userAuthToken;
-
-    //   const salesOrderHeader = await axios({
-    //     method: "post",
-    //     url: postSalesOrderHeader,
-    //     data: postSalesOrderHeaderBody,
-    //     headers: { "Authorization": userAuthToken, "Content-Type": "application/json" },
-    //   });
-
-    //   //Parse out key fields
-    //   const salesOrderData = {
-    //     CustAccount: salesOrderHeader.data.OrderingCustomerAccountNumber,
-    //     SalesOrderNumber: salesOrderHeader.data.SalesOrderNumber,
-    //     LineNumber: 1 
-    //   }
-
-      //Parse out key fields
-      const salesOrderData = {
-        CustAccount: "Temp",
-        SalesOrderNumber: "Temp",
-        LineNumber: 1 
+      }
+      else
+      {
+        userAuthToken = AuthToken;
       }
 
-      var statusError = true;
+      //Make call to D365 to get sales order header information
+      const postSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2";
+
+      const postSalesOrderHeaderBody = {
+        "OrderingCustomerAccountNumber": customerNumber.CustomerNumber
+    }
+    
+      userAuthToken = "Bearer " + userAuthToken;
+
+      var statusError;
+      var errorMessage;
+
+      const salesOrderHeader = await axios({
+        method: "post",
+        url: postSalesOrderHeader,
+        data: postSalesOrderHeaderBody,
+        headers: { "Authorization": userAuthToken, "Content-Type": "application/json" },
+      }).catch( error => {
+          statusError = true;
+
+          errorMessage = JSON.stringify(error);
+
+          if (errorMessage.includes("400"))
+          {
+            errorMessage = "Status code: 400" + "\n" + "Confirm customer is valid." + "\n";
+          }
+          else if (errorMessage.includes("500"))
+          {
+            errorMessage = "Status code: 500" + "\n" + "Confirm connection is valid." + "\n";
+          }
+          else
+          {
+            errorMessage = "An error occured." + "\n" + "Confirm connection is valid." + "\n";
+          }
+
+        }
+      );
 
       if (statusError)
       {
-        var errorMessage = "Status code: " + "500" + "\n" + "Error occured." + "\n";
         setError(errorMessage);
-        throw error("Failed to make order");
+        throw error(errorMessage);
+      }
+
+      //Parse out key fields
+      const salesOrderData = {
+        CustAccount: salesOrderHeader.data.OrderingCustomerAccountNumber,
+        SalesOrderNumber: salesOrderHeader.data.SalesOrderNumber,
+        LineNumber: 1 
       }
 
       //Redirect to new screen -> send in sales order information
