@@ -133,7 +133,7 @@ const CreateSalesOrder = () => {
           }
           else if (errorMessage.includes("500"))
           {
-            errorMessage = "Status code: 500" + "\n" + "Confirm connection is valid." + "\n";
+            errorMessage = "Status code: 500" + "\n" + "Confirm connection & data is valid." + "\n";
           }
           else
           {
@@ -142,6 +142,14 @@ const CreateSalesOrder = () => {
 
         }
       );
+
+      console.log(salesOrderHeader.data);
+
+      if (salesOrderHeader.data.DefaultShippingWarehouseId == "")
+      {
+        statusError = true;
+        errorMessage = "Customer does not have default warehouse." + "\n" + "Items can not be added to order " + salesOrderHeader.data.SalesOrderNumber + "\n";
+      }
 
       if (statusError)
       {

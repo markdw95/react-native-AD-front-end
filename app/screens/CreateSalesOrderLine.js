@@ -134,12 +134,42 @@ const CreateSalesOrderLine = ({route}) => {
 
       userAuthToken = "Bearer " + userAuthToken;
 
+      var statusError = false;
+      var errorMessage = "";
+
+      setError(errorMessage);
+
       const salesOrderLine = await axios({
         method: "post",
         url: postSalesOrderLine,
         data: postSalesOrderLineBody,
         headers: { "Authorization": userAuthToken, "Content-Type": "application/json" },
-      });
+      }).catch( error => {
+        statusError = true;
+
+        console.log(errorMessage);
+
+        if (errorMessage.includes("400"))
+        {
+          errorMessage = "Status code: 400" + "\n" + "Confirm item is valid." + "\n";
+        }
+        else if (errorMessage.includes("500"))
+        {
+          errorMessage = "Status code: 500" + "\n" + "Confirm connection is valid." + "\n";
+        }
+        else
+        {
+          errorMessage = "An error occured." + "\n" + "Confirm connection is valid." + "\n";
+        }
+
+      }
+    );
+
+    if (statusError)
+    {
+      setError(errorMessage);
+      throw error(errorMessage);
+    };
 
     //Update the line number for the next line
     var updateLineNum = salesItemData.LineNumber + 1;
@@ -153,19 +183,9 @@ const CreateSalesOrderLine = ({route}) => {
         LineNumber: updateLineNum
     });
 
-    //TO:DO:: Update thie logic to check the response status code, if it is 201 show build successMsg, else show error code/message
-    //Replicate this logic to CreateSalesOrder as well
-    var exampleError = false;
 
-    if (exampleError)
-    {
-        setError("Failed");
-    }
-    else
-    {
-        var successMsg = "Successfully created line number " + salesItemData.LineNumber;
-        setSuccess(successMsg);
-    }
+    var successMsg = "Successfully created line number " + salesItemData.LineNumber;
+    setSuccess(successMsg);
 
     } catch (error) {
     }
