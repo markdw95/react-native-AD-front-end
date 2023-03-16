@@ -28,7 +28,7 @@ export const CSTitle = styled.Text`
   font-size: 24px;
   font-weight: bold;
   margin: 20px 0 0 20px;
-  width: 170px;
+  width: 210px;
 `;
 
 export const Content = styled.View`

@@ -29,7 +29,7 @@ return (
 
     <CardButton>
         <Cover>
-        <Image source={require('../../assets/ImageThree.jpg')} />
+        <Image source={require('../../assets/ORANGE_2.jpg')} />
             <Caption style={styles.titleCaption}>Sales Order Header Data</Caption>
                 <Text style={styles.title}>Sales order: {salesOrderHeader.SalesOrderNumber}</Text>
                 <Text style={styles.title}>Customer: {salesOrderHeader.OrderingCustomerAccountNumber}</Text>
@@ -55,7 +55,7 @@ return (
                 <CardButton>
                 <Container screenWidth={screenWidth}>
                     <Cover>
-                    <Image source={require('../../assets/background1.jpg')} />
+                    <Image source={require('../../assets/ORANGE_2.jpg')} />
                     <Text style={styles.title}>Line creation number: {line.LineCreationSequenceNumber}</Text>
                         <Text style={styles.title}>Item Number: {line.ItemNumber}</Text>
                         <Text style={styles.title}>Sales Quantity: {line.OrderedSalesQuantity}</Text>
