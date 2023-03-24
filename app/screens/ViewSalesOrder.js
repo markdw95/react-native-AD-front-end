@@ -58,6 +58,8 @@ const ViewSalesOrder = () => {
           authorization: `JWT ${profile.token}`,
         },
       });
+      
+      console.log(res.data.formData);
 
       const D365ResourceURL   = res.data.formData.D365ResourceURL;
       const AuthHostURL       = res.data.formData.AuthHostURL;

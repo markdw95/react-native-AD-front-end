@@ -23,7 +23,7 @@ const Connection = () => {
     AuthHostURL: '',
     AuthClientId: '',
     AuthClientSecret: '',
-    email: profile.email
+    email: profile.user.email
   });
 
   const [error, setError] = useState('');
@@ -48,8 +48,6 @@ const Connection = () => {
         authorization: `JWT ${profile.token}`,
       },
     });
-
-    console.log(res);
 
     setConnectionInfo(res.data.formData);
   }
