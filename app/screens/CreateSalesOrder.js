@@ -143,8 +143,6 @@ const CreateSalesOrder = () => {
         }
       );
 
-      console.log(salesOrderHeader.data);
-
       if (salesOrderHeader.data.DefaultShippingWarehouseId == "")
       {
         statusError = true;

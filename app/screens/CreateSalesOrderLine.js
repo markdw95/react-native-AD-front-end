@@ -147,8 +147,6 @@ const CreateSalesOrderLine = ({route}) => {
       }).catch( error => {
         statusError = true;
 
-        console.log(errorMessage);
-
         if (errorMessage.includes("400"))
         {
           errorMessage = "Status code: 400" + "\n" + "Confirm item is valid." + "\n";

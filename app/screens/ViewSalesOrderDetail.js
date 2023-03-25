@@ -24,9 +24,6 @@ return (
     vertical
     contentContainerStyle={{ paddingRight: 20, paddingBottom: 30, paddingTop: 15 }}
   >
-
-
-
     <CardButton>
         <Cover>
         <Image source={require('../../assets/ORANGE_2.jpg')} />
@@ -48,11 +45,10 @@ return (
     contentContainerStyle={{ paddingRight: 20, paddingBottom: 30, paddingTop: 15 }}
   >
 
-
     {
         salesOrderLines.salesLines.map((line) => {
             return (
-                <CardButton>
+                <CardButton key={line.LineCreationSequenceNumber}>
                 <Container screenWidth={screenWidth}>
                     <Cover>
                     <Image source={require('../../assets/ORANGE_2.jpg')} />

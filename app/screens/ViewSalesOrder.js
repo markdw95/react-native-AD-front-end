@@ -59,8 +59,6 @@ const ViewSalesOrder = () => {
         },
       });
       
-      console.log(res.data.formData);
-
       const D365ResourceURL   = res.data.formData.D365ResourceURL;
       const AuthHostURL       = res.data.formData.AuthHostURL;
       const AuthClientId      = res.data.formData.AuthClientId;
@@ -138,8 +136,6 @@ const ViewSalesOrder = () => {
         headers: { "Authorization": userAuthToken },
       });
 
-      console.log(salesOrdeLines.data.value[0].ItemNumber);
-
       //Parse out key fields -> 1st only for now
       var lineArray = [];
 
@@ -161,8 +157,6 @@ const ViewSalesOrder = () => {
       const salesOrderLineDetails = {
         salesLines: lineArray
       }
-
-      console.log(salesOrderLineDetails);
 
       //Redirect to new screen -> send in sales order information
       navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});

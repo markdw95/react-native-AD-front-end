@@ -45,7 +45,6 @@ const LoginForm = () => {
           setIsLoggedIn(true);
         }
 
-        console.log(res.data);
       } catch (error) {
         console.log(error);
       }
