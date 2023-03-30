@@ -17,7 +17,7 @@ const FormInput = props => {
           <Text style={{ color: 'red', fontSize: 16 }}>{error}</Text>
         ) : null}
       </View>
-      <TextInput {...props} placeholder={placeholder} style={styles.input} editable={disabled}/>
+      <TextInput {...props} placeholder={placeholder} placeholderTextColor="gray" style={styles.input} editable={disabled}/>
     </>
   );
 };
