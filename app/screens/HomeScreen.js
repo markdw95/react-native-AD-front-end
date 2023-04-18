@@ -126,14 +126,15 @@ const HomeScreen = () => {
         <ScrollView
           horizontal
           pagingEnabled
-          style={{ marginVertical: SPACING * 2 }}
+          style={{ marginVertical: SPACING * 2, width: WIDTH }}
           showsHorizontalScrollIndicator={false}
         >
           {CATEGORIES[activeCategory].info.map((info) => (
             <TouchableOpacity
               key={info.id}
               style={{
-                marginRight: SPACING * 3,
+                //marginRight: SPACING * 3,
+                width: "33%",
                 padding: SPACING,
                 alignItems: "center",
               }}

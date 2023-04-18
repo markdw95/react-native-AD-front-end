@@ -8,6 +8,12 @@ import CreateSalesOrderLine from "../screens/CreateSalesOrderLine.js";
 import ViewSalesOrder from "../screens/ViewSalesOrder";
 import ViewSalesOrderDetail from "../screens/ViewSalesOrderDetail";
 import ViewCustomer from "../screens/ViewCustomer"
+import ViewVendor from "../screens/ViewVendor"
+import ViewItem from "../screens/ViewItem"
+import ViewInventory from "../screens/ViewInventory"
+import ViewWarehouse from "../screens/ViewWarehouse"
+import ViewPurchOrder from '../screens/ViewPurchOrder';
+import CreatePurchOrder from '../screens/CreatePurchOrder';
 
 const Home = () => {
 
@@ -26,7 +32,13 @@ const Home = () => {
         <Stack.Screen name="CreateSalesOrderLine" component={CreateSalesOrderLine} />
         <Stack.Screen name="ViewSalesOrder" component={ViewSalesOrder} />
         <Stack.Screen name="ViewSalesOrderDetail" component={ViewSalesOrderDetail} />
+        <Stack.Screen name="ViewPurchOrder" component={ViewPurchOrder} />
+        <Stack.Screen name="CreatePurchOrder" component={CreatePurchOrder} />
         <Stack.Screen name="ViewCustomer" component={ViewCustomer} />
+        <Stack.Screen name="ViewVendor" component={ViewVendor} />
+        <Stack.Screen name="ViewItem" component={ViewItem} />
+        <Stack.Screen name="ViewInventory" component={ViewInventory} />
+        <Stack.Screen name="ViewWarehouse" component={ViewWarehouse} />
       </Stack.Navigator>
     </NavigationContainer>
   );
