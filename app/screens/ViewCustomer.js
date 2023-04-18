@@ -12,7 +12,7 @@ import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
-const ViewSalesOrder = () => {
+const ViewCustomer = () => {
 
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
@@ -130,11 +130,11 @@ const ViewSalesOrder = () => {
       //Make call to D365 to get sales order line information
       const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
 
-      const salesOrdeLines = await axios({
-        method: "get",
-        url: getSalesOrderLine,
-        headers: { "Authorization": userAuthToken },
-      });
+      // const salesOrdeLines = await axios({
+      //   method: "get",
+      //   url: getSalesOrderLine,
+      //   headers: { "Authorization": userAuthToken },
+      // });
 
       //Parse out key fields -> 1st only for now
       var lineArray = [];
@@ -172,8 +172,8 @@ const ViewSalesOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='View sales order'
-        subHeading='Enter sales order number'
+        leftHeading='View customer record'
+        subHeading='Enter customer number'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
         rightHeaderTranslateY={rightHeaderTranslateY}
@@ -188,11 +188,11 @@ const ViewSalesOrder = () => {
       <FormInput
         value={SalesOrderNumber}
         onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
-        label='Sales Order Number'
-        placeholder='Sales order number'
+        label='Customer Number'
+        placeholder='Customer number'
         autoCapitalize='none'
       />
-      <FormSubmitButton onPress={submitForm} title='View sales order' />
+      <FormSubmitButton onPress={submitForm} title='View customer' />
 
       <Divider width={10} color={'#f0f3f5' }/>
 
@@ -223,4 +223,4 @@ const styles = StyleSheet.create({
   },
   });
 
-export default ViewSalesOrder
+export default ViewCustomer

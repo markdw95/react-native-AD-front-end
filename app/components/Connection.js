@@ -92,7 +92,7 @@ const Connection = () => {
   });
 
   return (
-    <View style={{ flex: 1, paddingTop: 120, backgroundColor:  '#070a2d'}}>
+    <View style={{ flex: 1, paddingTop: 120}}>
     <View style={{ height: 80 }}>
       <FormHeader
         leftHeading='Connection'
@@ -112,7 +112,7 @@ const Connection = () => {
         value={D365ResourceURL}
         onChangeText={value => handleOnChangeText(value, 'D365ResourceURL')}
         label='D365 Resource URL'
-        placeholder='D365ResourceURL'
+        placeholder='D365 Resource URL'
         autoCapitalize='none'
       />
       <FormInput

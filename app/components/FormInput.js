@@ -12,7 +12,7 @@ const FormInput = props => {
           marginBottom: 5,
         }}
       >
-        <Text style={{ fontWeight: 'bold', color: 'white' }}>{label}</Text>
+        <Text style={{ fontWeight: 'bold', color: 'black' }}>{label}</Text>
         {error ? (
           <Text style={{ color: 'red', fontSize: 16 }}>{error}</Text>
         ) : null}
@@ -25,13 +25,11 @@ const FormInput = props => {
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: '#f27b41',
     height: 35,
     borderRadius: 8,
     fontSize: 16,
     paddingLeft: 10,
     marginBottom: 20,
-    color: 'white'
   },
 });
 

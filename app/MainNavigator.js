@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 
 const StackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: '#070a2d' }}}>
+    <Stack.Navigator screenOptions={{ headerShown: false}}>
       <Stack.Screen component={AppForm} name='AppForm' />
       <Stack.Screen component={UserProfile} name='UserProfile' />
     </Stack.Navigator>

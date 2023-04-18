@@ -5,7 +5,8 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-
+import COLORS from '../app/config/COLORS'
+import SPACING from "../app/config/SPACING";
 import Home from './components/Home';
 import Connection from './components/Connection';
 import { useLogin } from './context/LoginProvider';
@@ -15,7 +16,7 @@ const Drawer = createDrawerNavigator();
 const CustomDrawer = props => {
   const { setIsLoggedIn, profile } = useLogin();
   return (
-    <View style={{ flex: 1, backgroundColor: '#070a2d'}}>
+    <View style={{ flex: 1}}>
       <DrawerContentScrollView {...props}>
         <View
           style={{
@@ -23,7 +24,7 @@ const CustomDrawer = props => {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: 20,
-            backgroundColor: '#f27b41',
+            backgroundColor: COLORS.light,
             marginBottom: 20,
           }}
         >
@@ -41,7 +42,7 @@ const CustomDrawer = props => {
           right: 0,
           left: 0,
           bottom: 50,
-          backgroundColor: '#f27b41',
+          backgroundColor: COLORS.light,
           padding: 20,
         }}
         onPress={() => setIsLoggedIn(false)}
@@ -58,17 +59,48 @@ const DrawerNavigator = () => {
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#070a2d',
+          backgroundColor: '#f0f3f5',
           elevation: 0,
           shadowOpacity: 0,
         },
         headerTitle: '',
-        headerTintColor: '#f27b41'
+        headerTintColor: COLORS.primary,
+        headerRight: () => (
+          <View style={{right: 50}}>
+          
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: SPACING * 3,
+                  fontWeight: "bold",
+                  color: COLORS.dark,
+                }}
+              >
+                AcquireDynamics
+              </Text>
+              <Image
+                style={{
+                  height: SPACING * 5,
+                  width: SPACING * 5,
+                  borderRadius: SPACING * 5,
+                  left: 25
+                }}
+                source={require("../assets/images/clear-tabIcon.png")}
+              />
+            </View>
+            </View>
+        ),
       }}
       drawerContent={props => <CustomDrawer {...props} />}
       drawerContentOptions= {{
-         activeTintColor :'#f27b41',
-         inactiveTintColor :'#f27b41',
+         activeTintColor :COLORS.primary,
+         inactiveTintColor :COLORS.dark,
       }}
     >
       <Drawer.Screen component={Home} name='Home' />

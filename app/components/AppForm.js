@@ -33,11 +33,11 @@ export default function AppForm({ navigation }) {
   });
   const loginColorInterpolate = animation.interpolate({
     inputRange: [0, width],
-    outputRange: ['rgba(27,27,51,1)', 'rgba(27,27,51,0.4)'],
+    outputRange: ['rgba(242, 123, 65,1)', 'rgba(242, 123, 65,0.4)'],
   });
   const signupColorInterpolate = animation.interpolate({
     inputRange: [0, width],
-    outputRange: ['rgba(27,27,51,0.4)', 'rgba(27,27,51,1)'],
+    outputRange: ['rgba(242, 123, 65,0.4)', 'rgba(242, 123, 65,1)'],
   });
 
   return (

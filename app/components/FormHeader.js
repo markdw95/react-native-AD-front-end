@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  heading: { fontSize: 30, fontWeight: 'bold', color: 'white' },
+  heading: { fontSize: 30, fontWeight: 'bold'},
   subHeading: { fontSize: 18, color: 'grey', textAlign: 'center' },
 });
 
