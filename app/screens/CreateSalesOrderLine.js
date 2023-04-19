@@ -227,9 +227,9 @@ const CreateSalesOrderLine = ({route}) => {
       />
       <FormSubmitButton onPress={submitForm} title={'Save line'} />
 
-      <Divider width={10} color={'#070a2d' }/>
+      <Divider width={10} color={'#f0f3f5' }/>
 
-      <FormSubmitButton onPress={() => navigation.navigate("ARHome")} title='Finish order' />
+      <FormSubmitButton onPress={() => navigation.navigate("HomeScreen")} title='Finish order' />
       
     </FormContainer>
     

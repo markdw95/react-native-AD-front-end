@@ -77,7 +77,7 @@ return (
   </ScrollView>
 
     <FormContainer>
-        <FormSubmitButton onPress={() => navigation.navigate("ARHome")} title='Back' />
+        <FormSubmitButton onPress={() => navigation.navigate("HomeScreen")} title='Back' />
     </FormContainer>
 
     </ScrollView>
@@ -107,9 +107,9 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: '#34495e',
     },
-    title: { color: 'white', fontSize: 16, padding: 2, marginLeft: 10 },
-    titleCaption: {color: 'white', fontSize: 24, padding: 8, textAlign: 'center'},
-    lineTitle: {color: 'white', fontSize: 24, paddingTop: 25, textAlign: 'center'}
+    title: { color: 'black', fontSize: 16, padding: 2, marginLeft: 10 },
+    titleCaption: {color: 'black', fontSize: 24, padding: 8, textAlign: 'center'},
+    lineTitle: {color: 'black', fontSize: 24, paddingTop: 25, textAlign: 'center'}
     });
 
 

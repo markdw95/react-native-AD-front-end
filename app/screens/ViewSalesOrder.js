@@ -160,7 +160,7 @@ const ViewSalesOrder = () => {
 
       //Redirect to new screen -> send in sales order information
       navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
-
+      
      } catch (error) {
      }
 };
