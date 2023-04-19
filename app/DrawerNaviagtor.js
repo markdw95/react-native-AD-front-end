@@ -66,7 +66,7 @@ const DrawerNavigator = () => {
         headerTitle: '',
         headerTintColor: COLORS.primary,
         headerRight: () => (
-          <View style={{right: 50}}>
+          <View style={{right: 30}}>
           
             <View
               style={{

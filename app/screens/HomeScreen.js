@@ -133,8 +133,7 @@ const HomeScreen = () => {
             <TouchableOpacity
               key={info.id}
               style={{
-                //marginRight: SPACING * 3,
-                width: "33%",
+                marginRight: SPACING * 3,
                 padding: SPACING,
                 alignItems: "center",
               }}
