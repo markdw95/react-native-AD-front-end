@@ -14,6 +14,7 @@ import ViewInventory from "../screens/ViewInventory"
 import ViewWarehouse from "../screens/ViewWarehouse"
 import ViewPurchOrder from '../screens/ViewPurchOrder';
 import CreatePurchOrder from '../screens/CreatePurchOrder';
+import ViewCustomerDetail from '../screens/ViewCustomerDetail';
 
 const Home = () => {
 
@@ -35,6 +36,7 @@ const Home = () => {
         <Stack.Screen name="ViewPurchOrder" component={ViewPurchOrder} />
         <Stack.Screen name="CreatePurchOrder" component={CreatePurchOrder} />
         <Stack.Screen name="ViewCustomer" component={ViewCustomer} />
+        <Stack.Screen name="ViewCustomerDetail" component={ViewCustomerDetail} />
         <Stack.Screen name="ViewVendor" component={ViewVendor} />
         <Stack.Screen name="ViewItem" component={ViewItem} />
         <Stack.Screen name="ViewInventory" component={ViewInventory} />
