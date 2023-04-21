@@ -9,6 +9,7 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
+import { getIn } from 'formik';
 
 const { width } = Dimensions.get('window');
 
@@ -17,14 +18,24 @@ const ViewInventory = () => {
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [itemNumber, setItemNumber] = useState({
+    ItemNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { ItemNumber } = itemNumber;
 
-  const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+  const handleOnChangeItem = (value, fieldName) => {
+    setItemNumber({ ...itemNumber, [fieldName]: value });
+  };
+
+  const [siteNumber, setSiteNumber] = useState({
+    SiteNumber: '',
+  });
+
+  const { SiteNumber } = siteNumber;
+
+  const handleOnChangeSite = (value, fieldName) => {
+    setSiteNumber({ ...siteNumber, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -107,59 +118,30 @@ const ViewInventory = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getInventory = D365ResourceURL + "/data/InventorySitesOnHandV2?$filter=ItemNumber eq '" + itemNumber.ItemNumber + "' and InventorySiteId eq '" + siteNumber.SiteNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
-        method: "get",
-        url: getSalesOrderHeader,
+      const inventory = await axios({
+        method: "get", 
+        url: getInventory,
         headers: { "Authorization": userAuthToken },
       });
 
       //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
-      }
-
-      //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
-
-      // const salesOrdeLines = await axios({
-      //   method: "get",
-      //   url: getSalesOrderLine,
-      //   headers: { "Authorization": userAuthToken },
-      // });
-
-      //Parse out key fields -> 1st only for now
-      var lineArray = [];
-
-      for (let line of salesOrdeLines.data.value) {
-        lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
-          ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
-          LineDescription: line.LineDescription,
-        });
-      }
-
-      const salesOrderLineDetails = {
-        salesLines: lineArray
+      const inventoryDetail = {
+        ItemNumber: inventory.data.value[0].ItemNumber,
+        InventorySiteId: inventory.data.value[0].InventorySiteId,
+        TotalAvailableQuantity: inventory.data.value[0].TotalAvailableQuantity.toString(),
+        OnHandQuantity: inventory.data.value[0].OnHandQuantity.toString(),
+        AvailableOrderedQuantity: inventory.data.value[0].AvailableOrderedQuantity.toString(),
+        ReservedOnHandQuantity: inventory.data.value[0].ReservedOnHandQuantity.toString(),
+        OrderedQuantity: inventory.data.value[0].OrderedQuantity.toString(),
+        OnOrderQuantity: inventory.data.value[0].OnOrderQuantity.toString(),
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+      navigation.navigate("ViewInventoryDetail", {inventoryDetail: inventoryDetail});
 
      } catch (error) {
      }
@@ -186,10 +168,17 @@ const ViewInventory = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
-        label='Inventory Number'
-        placeholder='Inventory number'
+        value={ItemNumber}
+        onChangeText={value => handleOnChangeItem(value, 'ItemNumber')}
+        label='Item Number'
+        placeholder='Item number'
+        autoCapitalize='none'
+      />
+      <FormInput
+        value={SiteNumber}
+        onChangeText={value => handleOnChangeSite(value, 'SiteNumber')}
+        label='Site Number'
+        placeholder='Site number'
         autoCapitalize='none'
       />
       <FormSubmitButton onPress={submitForm} title='View inventory' />

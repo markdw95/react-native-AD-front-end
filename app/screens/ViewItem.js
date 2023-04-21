@@ -124,7 +124,7 @@ const ViewItem = () => {
         SearchName: itemInfo.data.value[0].SearchName,
         ProductGroupId: itemInfo.data.value[0].ProductGroupId,
         ItemModelGroupId: itemInfo.data.value[0].ItemModelGroupId,
-        UnitCost: itemInfo.data.value[0].UnitCost,
+        UnitCost: itemInfo.data.value[0].UnitCost.toString(),
         InventoryUnitSymbol: itemInfo.data.value[0].InventoryUnitSymbol
       }
 

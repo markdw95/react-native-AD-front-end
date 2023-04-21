@@ -18,6 +18,7 @@ import ViewCustomerDetail from '../screens/ViewCustomerDetail';
 import ViewVendorDetail from '../screens/ViewVendorDetail';
 import ViewItemDetail from '../screens/ViewItemDetail';
 import ViewWarehouseDetail from '../screens/ViewWarehouseDetail';
+import ViewInventoryDetail from '../screens/ViewInventoryDetail';
 
 const Home = () => {
 
@@ -45,6 +46,7 @@ const Home = () => {
         <Stack.Screen name="ViewItem" component={ViewItem} />
         <Stack.Screen name="ViewItemDetail" component={ViewItemDetail} />
         <Stack.Screen name="ViewInventory" component={ViewInventory} />
+        <Stack.Screen name="ViewInventoryDetail" component={ViewInventoryDetail} />
         <Stack.Screen name="ViewWarehouse" component={ViewWarehouse} />
         <Stack.Screen name="ViewWarehouseDetail" component={ViewWarehouseDetail} />
       </Stack.Navigator>
