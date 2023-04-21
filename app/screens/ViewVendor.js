@@ -17,14 +17,14 @@ const ViewVendor = () => {
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [vendorNumber, setVendorNumber] = useState({
+    VendorNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { VendorNumber } = vendorNumber;
 
   const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+    setVendorNumber({ ...vendorNumber, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -107,59 +107,30 @@ const ViewVendor = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getVendorInfo = D365ResourceURL + "/data/VendorsV2??$filter=VendorAccountNumber eq '" + vendorNumber.VendorNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
+      const vendorInfo = await axios({
         method: "get",
-        url: getSalesOrderHeader,
+        url: getVendorInfo,
         headers: { "Authorization": userAuthToken },
       });
 
       //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
-      }
-
-      //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
-
-      // const salesOrdeLines = await axios({
-      //   method: "get",
-      //   url: getSalesOrderLine,
-      //   headers: { "Authorization": userAuthToken },
-      // });
-
-      //Parse out key fields -> 1st only for now
-      var lineArray = [];
-
-      for (let line of salesOrdeLines.data.value) {
-        lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
-          ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
-          LineDescription: line.LineDescription,
-        });
-      }
-
-      const salesOrderLineDetails = {
-        salesLines: lineArray
+      const vendorInfoDetails = {
+        VendorAccountNumber: vendorInfo.data.value[0].VendorAccountNumber,
+        VendorSearchName: vendorInfo.data.value[0].VendorSearchName,
+        PrimaryEmailAddress: vendorInfo.data.value[0].PrimaryEmailAddress,
+        PrimaryPhoneNumber: vendorInfo.data.value[0].PrimaryPhoneNumber,
+        DefaultDeliveryTermsCode: vendorInfo.data.value[0].DefaultDeliveryTermsCode,
+        DefaultVendorPaymentMethodName: vendorInfo.data.value[0].DefaultVendorPaymentMethodName,
+        DefaultPaymentTermsName: vendorInfo.data.value[0].DefaultPaymentTermsName,
+        FormattedPrimaryAddress: vendorInfo.data.value[0].FormattedPrimaryAddress.replace("\n", " ")
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+      navigation.navigate("ViewVendorDetail", {vendorInfoDetails: vendorInfoDetails});
 
      } catch (error) {
      }
@@ -186,8 +157,8 @@ const ViewVendor = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
+        value={VendorNumber}
+        onChangeText={value => handleOnChangeText(value, 'VendorNumber')}
         label='Vendor Number'
         placeholder='Vendor number'
         autoCapitalize='none'
