@@ -12,22 +12,40 @@ import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
-const CreatePurchOrder = () => {
+const CreatePurchLine = ({route}) => {
 
   const navigation = useNavigation();
+
+  const { purchOrderData } = route.params;
+
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [vendorNumber, setVendorNumber] = useState({
-    VendorNumber: '',
+  const [purchItemData, setPurchItemData] = useState({
+    OrderVendorAccountNumber: purchOrderData.OrderVendorAccountNumber,
+    ItemNumber: '',
+    OrderedPurchaseQuantity: '',
+    PurchaseOrderNumber: purchOrderData.PurchaseOrderNumber,
+    LineNumber: purchOrderData.LineNumber
   });
 
-  const { VendorNumber } = vendorNumber;
+  const { OrderVendorAccountNumber, ItemNumber, OrderedPurchaseQuantity } = purchItemData;
 
   const handleOnChangeText = (value, fieldName) => {
-    setVendorNumber({ ...vendorNumber, [fieldName]: value });
+    setPurchItemData({ ...purchItemData, [fieldName]: value });
   };
 
+  useEffect(() => {
+    updatePageData()
+  }, [])
+
+  const updatePageData = async () => {
+    setPurchItemData({ ...purchOrderData, [ItemNumber]: '' });
+    setPurchItemData({ ...purchOrderData, [OrderedPurchaseQuantity]: '' });
+    setPurchItemData({ ...purchOrderData, [LineNumber]: purchOrderData.LineNumber + 1 });
+  }
+
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const animation = useRef(new Animated.Value(0)).current;
   const scrollView = useRef(); 
@@ -105,62 +123,74 @@ const CreatePurchOrder = () => {
         userAuthToken = AuthToken;
       }
 
-      //Make call to D365 to get sales order header information
-      const postPurchOrderHeader = D365ResourceURL + "/data/PurchaseOrderHeadersV2";
+      //Post purchase order line
+      const postPurchOrderLine = D365ResourceURL + "/data/PurchaseOrderLinesV2";
 
-      const postPurchOrderHeaderBody = {
-        "OrderVendorAccountNumber": vendorNumber.VendorNumber
-    }
-    
+      const postPurchOrderLineBody = {
+        "PurchaseOrderNumber": purchItemData.PurchaseOrderNumber,
+        "ItemNumber": purchItemData.ItemNumber,
+        "OrderedPurchaseQuantity":parseInt(purchItemData.OrderedPurchaseQuantity),
+        "LineNumber": parseInt(purchItemData.LineNumber)
+    };
+
       userAuthToken = "Bearer " + userAuthToken;
 
-      var statusError;
-      var errorMessage;
+      var statusError = false;
+      var errorMessage = "";
 
-      const purchOrderHeader = await axios({
+      setError(errorMessage);
+
+      console.log(postPurchOrderLine);
+      console.log(userAuthToken);
+      console.log(postPurchOrderLineBody);
+
+      const purchOrderLine = await axios({
         method: "post",
-        url: postPurchOrderHeader,
-        data: postPurchOrderHeaderBody,
+        url: postPurchOrderLine,
+        data: postPurchOrderLineBody,
         headers: { "Authorization": userAuthToken, "Content-Type": "application/json" },
       }).catch( error => {
-          statusError = true;
+        statusError = true;
 
-          errorMessage = JSON.stringify(error);
-
-          if (errorMessage.includes("400"))
-          {
-            errorMessage = "Status code: 400" + "\n" + "Confirm vendor is valid." + "\n";
-          }
-          else if (errorMessage.includes("500"))
-          {
-            errorMessage = "Status code: 500" + "\n" + "Confirm connection & data is valid." + "\n";
-          }
-          else
-          {
-            errorMessage = "An error occured." + "\n" + "Confirm connection is valid." + "\n";
-          }
-
+        if (errorMessage.includes("400"))
+        {
+          errorMessage = "Status code: 400" + "\n" + "Confirm item is valid." + "\n";
         }
-      );
+        else if (errorMessage.includes("500"))
+        {
+          errorMessage = "Status code: 500" + "\n" + "Confirm connection is valid." + "\n";
+        }
+        else
+        {
+          errorMessage = "An error occured." + "\n" + "Confirm connection is valid." + "\n";
+        }
 
-      if (statusError)
-      {
-        setError(errorMessage);
-        throw error(errorMessage);
       }
+    );
 
-      //Parse out key fields
-      const purchOrderData = {
-        OrderVendorAccountNumber: purchOrderHeader.data.OrderVendorAccountNumber,
-        PurchaseOrderNumber: purchOrderHeader.data.PurchaseOrderNumber,
-        LineNumber: 1 
-      }
+    if (statusError)
+    {
+      setError(errorMessage);
+      throw error(errorMessage);
+    };
 
-      //Redirect to new screen -> send in sales order information
-      navigation.navigate("CreatePurchLine", {purchOrderData: purchOrderData});
+    //Update the line number for the next line
+    var updateLineNum = purchItemData.LineNumber + 1;
+
+    //This will clear the data for the next line to be inserted
+    setPurchItemData({ 
+        OrderVendorAccountNumber: purchItemData.OrderVendorAccountNumber,
+        ItemNumber: '',
+        OrderedPurchaseQuantity: '',
+        PurchaseOrderNumber: purchItemData.PurchaseOrderNumber,
+        LineNumber: updateLineNum
+    });
+
+
+    var successMsg = "Successfully created line number " + purchItemData.LineNumber;
+    setSuccess(successMsg);
 
     } catch (error) {
-      error = "Failed order creation";
     }
 };
 
@@ -168,33 +198,43 @@ const CreatePurchOrder = () => {
 
 <View style={{ flex: 1, paddingTop: 120 }}>
   
-    <View style={{ height: 80 }}>
+    <View style={{ height: 80, marginBottom: 20 }}>
       <FormHeader
-        leftHeading='Create purchase order'
-        subHeading='Enter vendor number'
+        leftHeading='Create purchase order line'
+        subHeading={'Purchase order: ' + purchItemData.PurchaseOrderNumber 
+               + '\n Vendor Account: ' + purchItemData.OrderVendorAccountNumber }
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
         rightHeaderTranslateY={rightHeaderTranslateY}
       />
     </View>
+    
       <FormContainer>
       {error ? (
-        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center' }}>
+        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', paddingBottom: 10 }}>
           {error}
         </Text>
       ) : null}
-      <FormInput
-        value={VendorNumber}
-        onChangeText={value => handleOnChangeText(value, 'VendorNumber')}
-        label='Vendor Number'
-        placeholder='Vendor number'
-        autoCapitalize='none'
+        {success ? (
+        <Text style={{ color: 'green', fontSize: 18, textAlign: 'center', paddingBottom: 10 }}>
+          {success}
+        </Text>
+      ) : null}
+     <FormInput
+        value={ItemNumber}
+        onChangeText={value => handleOnChangeText(value, 'ItemNumber')}
+        label='Item Number'
       />
-      <FormSubmitButton onPress={submitForm} title='Create purchase order' />
+     <FormInput
+        value={OrderedPurchaseQuantity}
+        onChangeText={value => handleOnChangeText(value, 'OrderedPurchaseQuantity')}
+        label='Purchase Quantity'
+      />
+      <FormSubmitButton onPress={submitForm} title={'Save line'} />
 
       <Divider width={10} color={'#f0f3f5' }/>
 
-      <FormSubmitButton onPress={() => navigation.navigate("HomeScreen")} title='Back' />
+      <FormSubmitButton onPress={() => navigation.navigate("HomeScreen")} title='Finish order' />
       
     </FormContainer>
     
@@ -203,21 +243,4 @@ const CreatePurchOrder = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-    backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-  },
-  });
-
-export default CreatePurchOrder
+export default CreatePurchLine
