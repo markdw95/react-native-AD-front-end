@@ -17,14 +17,14 @@ const ViewWarehouse = () => {
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [warehouseNumber, setWarehouseNumber] = useState({
+    WarehouseNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { WarehouseNumber } = warehouseNumber;
 
   const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+    setWarehouseNumber({ ...warehouseNumber, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -107,59 +107,29 @@ const ViewWarehouse = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getWarehouseInfo = D365ResourceURL + "/data/Warehouses?$filter=WarehouseId eq '" + warehouseNumber.WarehouseNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
+      const warehouseInfo = await axios({
         method: "get",
-        url: getSalesOrderHeader,
+        url: getWarehouseInfo,
         headers: { "Authorization": userAuthToken },
       });
 
       //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
-      }
-
-      //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
-
-      // const salesOrdeLines = await axios({
-      //   method: "get",
-      //   url: getSalesOrderLine,
-      //   headers: { "Authorization": userAuthToken },
-      // });
-
-      //Parse out key fields -> 1st only for now
-      var lineArray = [];
-
-      for (let line of salesOrdeLines.data.value) {
-        lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
-          ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
-          LineDescription: line.LineDescription,
-        });
-      }
-
-      const salesOrderLineDetails = {
-        salesLines: lineArray
+      const warehouseInfoDetails = {
+        WarehouseId: warehouseInfo.data.value[0].WarehouseId,
+        WarehouseName: warehouseInfo.data.value[0].WarehouseName,
+        OperationalSiteId: warehouseInfo.data.value[0].OperationalSiteId,
+        WarehouseType: warehouseInfo.data.value[0].WarehouseType,
+        FormattedPrimaryAddress: warehouseInfo.data.value[0].FormattedPrimaryAddress,
+        QuarantineWarehouseId: warehouseInfo.data.value[0].QuarantineWarehouseId,
+        TransitWarehouseId: warehouseInfo.data.value[0].TransitWarehouseId
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+      navigation.navigate("ViewWarehouseDetail", {warehouseInfoDetails: warehouseInfoDetails});
 
      } catch (error) {
      }
@@ -186,8 +156,8 @@ const ViewWarehouse = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
+        value={WarehouseNumber}
+        onChangeText={value => handleOnChangeText(value, 'WarehouseNumber')}
         label='Warehouse Number'
         placeholder='Warehouse number'
         autoCapitalize='none'

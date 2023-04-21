@@ -17,14 +17,14 @@ const ViewItem = () => {
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [itemNumber, setItemNumber] = useState({
+    ItemNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { ItemNumber } = itemNumber;
 
   const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+    setItemNumber({ ...itemNumber, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -107,59 +107,29 @@ const ViewItem = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getItemInfo = D365ResourceURL + "/data/ReleasedProductsV2?$filter=ItemNumber eq '" + itemNumber.ItemNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
+      const itemInfo = await axios({
         method: "get",
-        url: getSalesOrderHeader,
+        url: getItemInfo,
         headers: { "Authorization": userAuthToken },
       });
 
       //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
-      }
-
-      //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
-
-      // const salesOrdeLines = await axios({
-      //   method: "get",
-      //   url: getSalesOrderLine,
-      //   headers: { "Authorization": userAuthToken },
-      // });
-
-      //Parse out key fields -> 1st only for now
-      var lineArray = [];
-
-      for (let line of salesOrdeLines.data.value) {
-        lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
-          ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
-          LineDescription: line.LineDescription,
-        });
-      }
-
-      const salesOrderLineDetails = {
-        salesLines: lineArray
+      const itemInfoDetails = {
+        ItemNumber: itemInfo.data.value[0].ItemNumber,
+        PrimaryVendorAccountNumber: itemInfo.data.value[0].PrimaryVendorAccountNumber,
+        SearchName: itemInfo.data.value[0].SearchName,
+        ProductGroupId: itemInfo.data.value[0].ProductGroupId,
+        ItemModelGroupId: itemInfo.data.value[0].ItemModelGroupId,
+        UnitCost: itemInfo.data.value[0].UnitCost,
+        InventoryUnitSymbol: itemInfo.data.value[0].InventoryUnitSymbol
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+      navigation.navigate("ViewItemDetail", {itemInfoDetails: itemInfoDetails});
 
      } catch (error) {
      }
@@ -186,8 +156,8 @@ const ViewItem = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
+        value={ItemNumber}
+        onChangeText={value => handleOnChangeText(value, 'ItemNumber')}
         label='Item Number'
         placeholder='Item number'
         autoCapitalize='none'

@@ -107,7 +107,7 @@ const ViewVendor = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getVendorInfo = D365ResourceURL + "/data/VendorsV2??$filter=VendorAccountNumber eq '" + vendorNumber.VendorNumber + "'";
+      const getVendorInfo = D365ResourceURL + "/data/VendorsV2?$filter=VendorAccountNumber eq '" + vendorNumber.VendorNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
