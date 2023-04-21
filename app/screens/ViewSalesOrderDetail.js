@@ -50,9 +50,9 @@ return (
             return (
                 <CardButton key={line.LineCreationSequenceNumber}>
                 <Container screenWidth={screenWidth}>
-                    <Cover>
+                    <Cover style={styles.container}>
                     <Image source={require('../../assets/ORANGE_2.jpg')} />
-                    <Text style={styles.title}>Line creation number: {line.LineCreationSequenceNumber}</Text>
+                    <Text style={styles.titleFirst}>Line Creation Number: {line.LineCreationSequenceNumber}</Text>
                         <Text style={styles.title}>Item Number: {line.ItemNumber}</Text>
                         <Text style={styles.title}>Sales Quantity: {line.OrderedSalesQuantity}</Text>
                         <Text style={styles.title}>Sales UOM: {line.SalesUnitSymbol}</Text>
@@ -87,30 +87,24 @@ return (
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'left',
-      justifyContent: 'center',
-      backgroundColor: '#34495e',
-      color: 'white',
-      paddingLeft: 10,
-      paddingTop: 10,
-      paddingBottom: 10,
-    },
-    lineCard: {
-      backgroundColor: '#34495e',
-      color: 'black',
-    },
-    paragraph: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: '#34495e',
-    },
-    title: { color: 'black', fontSize: 16, padding: 2, marginLeft: 10 },
-    titleCaption: {color: 'black', fontSize: 24, padding: 8, textAlign: 'center'},
-    lineTitle: {color: 'black', fontSize: 24, paddingTop: 25, textAlign: 'center'}
-    });
+  container: {
+    height: 225
+  },
+  lineCard: {
+    backgroundColor: '#34495e',
+    color: 'black',
+  },
+  paragraph: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#34495e',
+  },
+  title: { color: 'black', fontSize: 16, padding: 2, marginLeft: 10 },
+  titleFirst: { color: 'black', fontSize: 16, padding: 2, marginLeft: 10, marginTop: 10 },
+  titleCaption: {color: 'black', fontSize: 24, padding: 8, textAlign: 'center'},
+  lineTitle: {color: 'black', fontSize: 24, paddingTop: 25, textAlign: 'center'}
+  });
 
 
 export default ViewSalesOrderDetail

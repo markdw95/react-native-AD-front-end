@@ -44,7 +44,7 @@ export const Logo = styled.Image`
 `;
 
 export const Wrapper = styled.View`
-  margin-left: 10px;
+  margin-bottom: 15px;
 `;
 
 export const Caption = styled.Text`

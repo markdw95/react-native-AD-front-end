@@ -17,14 +17,14 @@ const ViewPurchOrder = () => {
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [purchOrder, setPurchOrder] = useState({
+    PurchOrderNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { PurchOrderNumber } = purchOrder;
 
   const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+    setPurchOrder({ ...purchOrder, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -107,59 +107,59 @@ const ViewPurchOrder = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getPurchOrderHeader = D365ResourceURL + "/data/PurchaseOrderHeadersV2?$filter=PurchaseOrderNumber eq '" + purchOrder.PurchOrderNumber + "'";
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
+      const purchOrderHeader = await axios({
         method: "get",
-        url: getSalesOrderHeader,
+        url: getPurchOrderHeader,
         headers: { "Authorization": userAuthToken },
       });
 
       //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
+      const purchOrderHeaderDetails = {
+        PurchaseOrderNumber: purchOrderHeader.data.value[0].PurchaseOrderNumber,
+        OrderVendorAccountNumber: purchOrderHeader.data.value[0].OrderVendorAccountNumber,
+        PurchaseOrderStatus: purchOrderHeader.data.value[0].PurchaseOrderStatus,
+        PurchaseOrderPoolId: purchOrderHeader.data.value[0].PurchaseOrderPoolId,
+        PaymentTermsName: purchOrderHeader.data.value[0].PaymentTermsName,
+        PurchaseOrderName: purchOrderHeader.data.value[0].PurchaseOrderName
       }
 
       //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const getPurchOrderLine = D365ResourceURL + "/data/PurchaseOrderLinesV2?$filter=PurchaseOrderNumber eq '" + purchOrder.PurchOrderNumber + "'";
 
-      // const salesOrdeLines = await axios({
-      //   method: "get",
-      //   url: getSalesOrderLine,
-      //   headers: { "Authorization": userAuthToken },
-      // });
+      const purchOrderLines = await axios({
+        method: "get",
+        url: getPurchOrderLine,
+        headers: { "Authorization": userAuthToken },
+      });
 
       //Parse out key fields -> 1st only for now
       var lineArray = [];
 
-      for (let line of salesOrdeLines.data.value) {
+      for (let line of purchOrderLines.data.value) {
         lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
+          PurchaseOrderNumber: line.PurchaseOrderNumber,
           ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
+          LineNumber: line.LineNumber,
+          OrderedPurchaseQuantity: line.OrderedPurchaseQuantity,
+          PurchaseUnitSymbol: line.PurchaseUnitSymbol,
+          ReceivingWarehouseId: line.ReceivingWarehouseId,
+          ReceivingSiteId: line.ReceivingSiteId,
+          PurchasePrice: line.PurchasePrice,
+          PurchaseOrderLineStatus: line.PurchaseOrderLineStatus,
           LineDescription: line.LineDescription,
         });
       }
 
-      const salesOrderLineDetails = {
-        salesLines: lineArray
+      const purchOrderLineDetails = {
+        purchLines: lineArray
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+      navigation.navigate("ViewPurchOrderDetail", {purchOrderHeader: purchOrderHeaderDetails, purchOrderLines: purchOrderLineDetails});
 
      } catch (error) {
      }
@@ -186,8 +186,8 @@ const ViewPurchOrder = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
+        value={PurchOrderNumber}
+        onChangeText={value => handleOnChangeText(value, 'PurchOrderNumber')}
         label='Purchase Order Number'
         placeholder='Purchase order number'
         autoCapitalize='none'
