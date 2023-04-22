@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, Text, Animated, Dimensions } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -12,22 +12,33 @@ import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
-const ViewSalesOrder = () => {
+const DeletePurchOrder = () => {
 
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrder, setSalesOrder] = useState({
-    SalesOrderNumber: '',
+  const [purchOrderNumber, setPurchOrderNumber] = useState({
+    PurchOrderNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrder;
+  const { PurchOrderNumber } = purchOrderNumber;
 
-  const handleOnChangeText = (value, fieldName) => {
-    setSalesOrder({ ...salesOrder, [fieldName]: value });
+  const handleOnChangeItem = (value, fieldName) => {
+    setPurchOrderNumber({ ...purchOrderNumber, [fieldName]: value });
+  };
+
+  const [legalEntity, setLegalEntity] = useState({
+    LegalEntity: '',
+  });
+
+  const { LegalEntity } = legalEntity;
+
+  const handleOnChangeSite = (value, fieldName) => {
+    setLegalEntity({ ...legalEntity, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const animation = useRef(new Animated.Value(0)).current;
   const scrollView = useRef(); 
@@ -115,61 +126,51 @@ const ViewSalesOrder = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getSalesOrderHeader = D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+      const deletePurchOrder = D365ResourceURL + "/data/PurchaseOrderHeadersV2(PurchaseOrderNumber= '" + purchOrderNumber.PurchOrderNumber + "', dataAreaId='" + legalEntity.LegalEntity + "')"
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const salesOrderHeader = await axios({
-        method: "get",
-        url: getSalesOrderHeader,
+      const purchaseOrder = await axios({
+        method: "delete", 
+        url: deletePurchOrder,
         headers: { "Authorization": userAuthToken },
-      });
+      }).catch( error => {
+        statusError = true;
 
-      //Parse out key fields
-      const salesOrderHeaderDetails = {
-        SalesOrderNumber: salesOrderHeader.data.value[0].SalesOrderNumber,
-        OrderingCustomerAccountNumber: salesOrderHeader.data.value[0].OrderingCustomerAccountNumber,
-        SalesOrderStatus: salesOrderHeader.data.value[0].SalesOrderStatus,
-        SalesOrderPoolId: salesOrderHeader.data.value[0].SalesOrderPoolId,
-        PaymentTermsName: salesOrderHeader.data.value[0].PaymentTermsName,
-        SalesOrderName: salesOrderHeader.data.value[0].SalesOrderName
+        errorMessage = JSON.stringify(error);
+
+        if (errorMessage.includes("400"))
+        {
+          errorMessage = "Status code: 400" + "\n" + "Confirm order number and legal entity are valid." + "\n";
+        }
+        else if (errorMessage.includes("500"))
+        {
+          errorMessage = "Status code: 500" + "\n" + "Confirm connection & data is valid." + "\n";
+        }
+        else
+        {
+          errorMessage = "An error occured." + "\n" + "Confirm connection is valid." + "\n";
+        }
+
       }
+    );
 
-      //Make call to D365 to get sales order line information
-      const getSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrder.SalesOrderNumber + "'";
+    if (statusError)
+    {
+      setSuccess("");
+      setError(errorMessage);
+    }
+    else
+    {
+      setError("");
+      var successMsg = "Successfully deleted purchase order.";
+      setSuccess(successMsg);
+    }
 
-      const salesOrdeLines = await axios({
-        method: "get",
-        url: getSalesOrderLine,
-        headers: { "Authorization": userAuthToken },
-      });
-
-      //Parse out key fields -> 1st only for now
-      var lineArray = [];
-
-      for (let line of salesOrdeLines.data.value) {
-        lineArray.push({
-          SalesOrderNumber: line.SalesOrderNumber,
-          ItemNumber: line.ItemNumber,
-          LineCreationSequenceNumber: line.LineCreationSequenceNumber,
-          OrderedSalesQuantity: line.OrderedSalesQuantity,
-          SalesUnitSymbol: line.SalesUnitSymbol,
-          ShippingWarehouseId: line.ShippingWarehouseId,
-          ShippingSiteId: line.ShippingSiteId,
-          SalesPrice: line.SalesPrice,
-          SalesOrderLineStatus: line.SalesOrderLineStatus,
-          LineDescription: line.LineDescription,
-        });
-      }
-
-      const salesOrderLineDetails = {
-        salesLines: lineArray
-      }
-
-      //Redirect to new screen -> send in sales order information
-      navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
-      
      } catch (error) {
+      console.log(error);
+      var errorMessage = "Unable to delete purchase order.";
+      setError(errorMessage);
      }
 };
 
@@ -179,8 +180,8 @@ const ViewSalesOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='View sales order'
-        subHeading='Enter sales order number'
+        leftHeading='Delete Purchase Order'
+        subHeading='Enter order number'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
         rightHeaderTranslateY={rightHeaderTranslateY}
@@ -192,14 +193,26 @@ const ViewSalesOrder = () => {
           {error}
         </Text>
       ) : null}
+      {success ? (
+        <Text style={{ color: 'green', fontSize: 18, textAlign: 'center', marginBottom: 15 }}>
+          {success}
+        </Text>
+      ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeText(value, 'SalesOrderNumber')}
-        label='Sales Order Number'
-        placeholder='Sales order number'
+        value={PurchOrderNumber}
+        onChangeText={value => handleOnChangeItem(value, 'PurchOrderNumber')}
+        label='Purchase Order Number'
+        placeholder='Purchase Order number'
         autoCapitalize='none'
       />
-      <FormSubmitButton onPress={submitForm} title='View sales order' />
+      <FormInput
+        value={LegalEntity}
+        onChangeText={value => handleOnChangeSite(value, 'LegalEntity')}
+        label='Legal Entity'
+        placeholder='Legal Entity'
+        autoCapitalize='none'
+      />
+      <FormSubmitButton onPress={submitForm} title='Delete purchase order' />
 
       <Divider width={10} color={'#f0f3f5' }/>
 
@@ -212,21 +225,4 @@ const ViewSalesOrder = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-    backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'white',
-  },
-  });
-
-export default ViewSalesOrder
+export default DeletePurchOrder

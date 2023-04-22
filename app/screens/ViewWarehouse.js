@@ -144,8 +144,6 @@ const ViewWarehouse = () => {
 };
 
   return (
-<View>
-
 <View style={{ flex: 1, paddingTop: 120 }}>
   
     <View style={{ height: 80 }}>
@@ -179,8 +177,6 @@ const ViewWarehouse = () => {
     </FormContainer>
     
     </View>
-
-</View>
   );
 };
 

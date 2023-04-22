@@ -174,7 +174,6 @@ const ViewPurchOrder = () => {
 };
 
   return (
-<View>
 
 <View style={{ flex: 1, paddingTop: 120 }}>
   
@@ -210,7 +209,6 @@ const ViewPurchOrder = () => {
     
     </View>
 
-</View>
   );
 };
 

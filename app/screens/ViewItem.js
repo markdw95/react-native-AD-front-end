@@ -144,7 +144,6 @@ const ViewItem = () => {
 };
 
   return (
-<View>
 
 <View style={{ flex: 1, paddingTop: 120 }}>
   
@@ -180,7 +179,6 @@ const ViewItem = () => {
     
     </View>
 
-</View>
   );
 };
 

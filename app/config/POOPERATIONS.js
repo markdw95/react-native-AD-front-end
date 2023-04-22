@@ -20,5 +20,6 @@ export default [
     id: 4,
     title: "Delete existing order",
     image: require("../../assets/images/deletePO.jpg"),
+    path: "DeletePurchOrder"
   },
 ];
