@@ -10,6 +10,7 @@ import SPACING from "../app/config/SPACING";
 import Home from './components/Home';
 import Connection from './components/Connection';
 import { useLogin } from './context/LoginProvider';
+import UserProfile from './components/UserProfile';
 
 const Drawer = createDrawerNavigator();
 
@@ -66,7 +67,7 @@ const DrawerNavigator = () => {
         headerTitle: '',
         headerTintColor: COLORS.primary,
         headerRight: () => (
-          <View style={{right: 30}}>
+          <View style={{right: 50}}>
           
             <View
               style={{
@@ -105,6 +106,7 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen component={Home} name='Home' />
       <Drawer.Screen component={Connection} name='Connection'/>
+      <Drawer.Screen component={UserProfile} name='User Information'/>
     </Drawer.Navigator>
   );
 };
