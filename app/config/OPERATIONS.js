@@ -19,6 +19,12 @@ export default [
   },
   {
     id: 4,
+    title: "Add line to existing order",
+    image: require("../../assets/images/newLine.jpg"),
+    path: "AddSalesLine"
+  },
+  {
+    id: 5,
     title: "Delete existing order",
     image: require("../../assets/images/delete.jpg"),
     path: "DeleteSalesOrder"

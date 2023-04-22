@@ -27,6 +27,7 @@ import DeleteSalesOrder from '../screens/DeleteSalesOrder';
 import UpdateSalesOrder from '../screens/UpdateSalesOrder';
 import UpdateSalesOrderLine from '../screens/UpdateSalesOrderLine';
 import UpdatePurchOrderLine from '../screens/UpdatePurchOrderLine';
+import AddPurchLine from '../screens/AddPurchLine';
 
 const Home = () => {
 
@@ -54,6 +55,7 @@ const Home = () => {
         <Stack.Screen name="CreatePurchLine" component={CreatePurchLine} />
         <Stack.Screen name="UpdatePurchOrder" component={UpdatePurchOrder} />
         <Stack.Screen name="UpdatePurchOrderLine" component={UpdatePurchOrderLine} />
+        <Stack.Screen name="AddPurchLine" component={AddPurchLine} />
         <Stack.Screen name="DeletePurchOrder" component={DeletePurchOrder} />
         <Stack.Screen name="ViewCustomer" component={ViewCustomer} />
         <Stack.Screen name="ViewCustomerDetail" component={ViewCustomerDetail} />
