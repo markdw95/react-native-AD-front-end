@@ -138,7 +138,11 @@ const UpdateSalesOrder = () => {
       //Make call to D365 to get sales order header information
       const getLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrderNumber.SalesOrderNumber + "' and LineCreationSequenceNumber eq " + lineNumber.LineNumber;
 
+      console.log(getLine);
+
       userAuthToken = "Bearer " + userAuthToken;
+
+      var statusError = false;
 
       const line = await axios({
         method: "get", 
@@ -165,11 +169,11 @@ const UpdateSalesOrder = () => {
       }
     );
 
-      if (line.data.value[0] == undefined)
-      {
-        statusError = true;
-        errorMessage = "An error occured." + "\n" + "No sales order line found." + "\n";
-      }
+    if (line.data.value[0] == undefined)
+    {
+      statusError = true;
+      errorMessage = "An error occured." + "\n" + "No sales order line found." + "\n";
+    }
       
       if (statusError)
       {
