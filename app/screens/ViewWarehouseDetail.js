@@ -48,7 +48,7 @@ const ViewWarehouseDetail = ({route}) => {
     </View>
       <FormContainer>
       {error ? (
-        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center' }}>
+        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
           {error}
         </Text>
       ) : null}

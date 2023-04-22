@@ -66,6 +66,14 @@ const ViewVendor = () => {
       const AuthToken         = res.data.formData.AuthToken;
       const AuthTokenExp      = res.data.formData.AuthTokenExp;
 
+      //No connection found
+      if (D365ResourceURL == '' || AuthHostURL == '' || AuthClientId == '' || AuthClientSecret == '')
+      {
+          var noConnectionFound = "No connection found.\n Please enter a valid connection and try again."
+          setError(noConnectionFound);
+          throw error(noConnectionFound);
+      }
+
       const currentTimeSeconds = new Date().getTime() / 1000;
 
       var userAuthToken;
@@ -152,7 +160,7 @@ const ViewVendor = () => {
     </View>
       <FormContainer>
       {error ? (
-        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center' }}>
+        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
           {error}
         </Text>
       ) : null}
