@@ -23,6 +23,8 @@ import ViewWarehouseDetail from '../screens/ViewWarehouseDetail';
 import ViewInventoryDetail from '../screens/ViewInventoryDetail';
 import DeletePurchOrder from '../screens/DeletePurchOrder';
 import DeleteSalesOrder from '../screens/DeleteSalesOrder';
+import UpdateSalesOrder from '../screens/UpdateSalesOrder';
+import UpdateSalesOrderLine from '../screens/UpdateSalesOrderLine';
 
 const Home = () => {
 
@@ -41,6 +43,8 @@ const Home = () => {
         <Stack.Screen name="CreateSalesOrderLine" component={CreateSalesOrderLine} />
         <Stack.Screen name="ViewSalesOrder" component={ViewSalesOrder} />
         <Stack.Screen name="DeleteSalesOrder" component={DeleteSalesOrder} />
+        <Stack.Screen name="UpdateSalesOrder" component={UpdateSalesOrder} />
+        <Stack.Screen name="UpdateSalesOrderLine" component={UpdateSalesOrderLine} />
         <Stack.Screen name="ViewSalesOrderDetail" component={ViewSalesOrderDetail} />
         <Stack.Screen name="ViewPurchOrder" component={ViewPurchOrder} />
         <Stack.Screen name="ViewPurchOrderDetail" component={ViewPurchOrderDetail} />
