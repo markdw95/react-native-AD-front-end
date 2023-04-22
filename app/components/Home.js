@@ -28,6 +28,7 @@ import UpdateSalesOrder from '../screens/UpdateSalesOrder';
 import UpdateSalesOrderLine from '../screens/UpdateSalesOrderLine';
 import UpdatePurchOrderLine from '../screens/UpdatePurchOrderLine';
 import AddPurchLine from '../screens/AddPurchLine';
+import AddSalesLine from '../screens/AddSalesLine';
 
 const Home = () => {
 
@@ -49,6 +50,7 @@ const Home = () => {
         <Stack.Screen name="UpdateSalesOrder" component={UpdateSalesOrder} />
         <Stack.Screen name="UpdateSalesOrderLine" component={UpdateSalesOrderLine} />
         <Stack.Screen name="ViewSalesOrderDetail" component={ViewSalesOrderDetail} />
+        <Stack.Screen name="AddSalesLine" component={AddSalesLine} />
         <Stack.Screen name="ViewPurchOrder" component={ViewPurchOrder} />
         <Stack.Screen name="ViewPurchOrderDetail" component={ViewPurchOrderDetail} />
         <Stack.Screen name="CreatePurchOrder" component={CreatePurchOrder} />
