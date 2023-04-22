@@ -12,19 +12,19 @@ import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
-const DeletePurchOrder = () => {
+const DeleteSalesOrder = () => {
 
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [purchOrderNumber, setPurchOrderNumber] = useState({
-    PurchOrderNumber: '',
+  const [salesOrderNumber, setSalesOrderNumber] = useState({
+    SalesOrderNumber: '',
   });
 
-  const { PurchOrderNumber } = purchOrderNumber;
+  const { SalesOrderNumber } = salesOrderNumber;
 
   const handleOnChangeItem = (value, fieldName) => {
-    setPurchOrderNumber({ ...purchOrderNumber, [fieldName]: value });
+    setSalesOrderNumber({ ...salesOrderNumber, [fieldName]: value });
   };
 
   const [legalEntity, setLegalEntity] = useState({
@@ -126,15 +126,15 @@ const DeletePurchOrder = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const deletePurchOrder = D365ResourceURL + "/data/PurchaseOrderHeadersV2(PurchaseOrderNumber= '" + purchOrderNumber.PurchOrderNumber + "', dataAreaId='" + legalEntity.LegalEntity + "')"
+      const deleteSalesOrder = D365ResourceURL + "/data/SalesOrderHeadersV2(SalesOrderNumber= '" + salesOrderNumber.SalesOrderNumber + "', dataAreaId='" + legalEntity.LegalEntity + "')"
 
       userAuthToken = "Bearer " + userAuthToken;
 
       var statusError = false;
 
-      const purchaseOrder = await axios({
+      const salesOrder = await axios({
         method: "delete", 
-        url: deletePurchOrder,
+        url: deleteSalesOrder,
         headers: { "Authorization": userAuthToken },
       }).catch( error => {
         statusError = true;
@@ -165,13 +165,13 @@ const DeletePurchOrder = () => {
     else
     {
       setError("");
-      var successMsg = "Successfully deleted purchase order.";
+      var successMsg = "Successfully deleted sales order.";
       setSuccess(successMsg);
     }
 
      } catch (error) {
       console.log(error);
-      var errorMessage = "Unable to delete purchase order.";
+      var errorMessage = "Unable to delete sales order.";
       setError(errorMessage);
      }
 };
@@ -182,7 +182,7 @@ const DeletePurchOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='Delete Purchase Order'
+        leftHeading='Delete Sales Order'
         subHeading='Enter order number'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
@@ -201,10 +201,10 @@ const DeletePurchOrder = () => {
         </Text>
       ) : null}
       <FormInput
-        value={PurchOrderNumber}
-        onChangeText={value => handleOnChangeItem(value, 'PurchOrderNumber')}
-        label='Purchase Order Number'
-        placeholder='Purchase Order number'
+        value={SalesOrderNumber}
+        onChangeText={value => handleOnChangeItem(value, 'SalesOrderNumber')}
+        label='Sales Order Number'
+        placeholder='Sales Order number'
         autoCapitalize='none'
       />
       <FormInput
@@ -214,7 +214,7 @@ const DeletePurchOrder = () => {
         placeholder='Legal Entity'
         autoCapitalize='none'
       />
-      <FormSubmitButton onPress={submitForm} title='Delete purchase order' />
+      <FormSubmitButton onPress={submitForm} title='Delete sales order' />
 
       <Divider width={10} color={'#f0f3f5' }/>
 
@@ -227,4 +227,4 @@ const DeletePurchOrder = () => {
   );
 };
 
-export default DeletePurchOrder
+export default DeleteSalesOrder
