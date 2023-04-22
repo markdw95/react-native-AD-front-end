@@ -14,6 +14,7 @@ import ViewInventory from "../screens/ViewInventory"
 import ViewWarehouse from "../screens/ViewWarehouse"
 import ViewPurchOrder from '../screens/ViewPurchOrder';
 import ViewPurchOrderDetail from '../screens/ViewPurchOrderDetail';
+import UpdatePurchOrder from '../screens/UpdatePurchOrder';
 import CreatePurchOrder from '../screens/CreatePurchOrder';
 import CreatePurchLine from '../screens/CreatePurchLine';
 import ViewCustomerDetail from '../screens/ViewCustomerDetail';
@@ -25,6 +26,7 @@ import DeletePurchOrder from '../screens/DeletePurchOrder';
 import DeleteSalesOrder from '../screens/DeleteSalesOrder';
 import UpdateSalesOrder from '../screens/UpdateSalesOrder';
 import UpdateSalesOrderLine from '../screens/UpdateSalesOrderLine';
+import UpdatePurchOrderLine from '../screens/UpdatePurchOrderLine';
 
 const Home = () => {
 
@@ -50,6 +52,8 @@ const Home = () => {
         <Stack.Screen name="ViewPurchOrderDetail" component={ViewPurchOrderDetail} />
         <Stack.Screen name="CreatePurchOrder" component={CreatePurchOrder} />
         <Stack.Screen name="CreatePurchLine" component={CreatePurchLine} />
+        <Stack.Screen name="UpdatePurchOrder" component={UpdatePurchOrder} />
+        <Stack.Screen name="UpdatePurchOrderLine" component={UpdatePurchOrderLine} />
         <Stack.Screen name="DeletePurchOrder" component={DeletePurchOrder} />
         <Stack.Screen name="ViewCustomer" component={ViewCustomer} />
         <Stack.Screen name="ViewCustomerDetail" component={ViewCustomerDetail} />

@@ -15,6 +15,7 @@ export default [
     id: 3,
     title: "Update existing order",
     image: require("../../assets/images/updatePO.jpg"),
+    path: "UpdatePurchOrder"
   },
   {
     id: 4,

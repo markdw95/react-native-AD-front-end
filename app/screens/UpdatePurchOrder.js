@@ -13,19 +13,19 @@ import { getIn } from 'formik';
 
 const { width } = Dimensions.get('window');
 
-const UpdateSalesOrder = () => {
+const UpdatePurchOrder = () => {
 
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
 
-  const [salesOrderNumber, setSalesOrderNumber] = useState({
-    SalesOrderNumber: '',
+  const [purchaseOrderNumber, setPurchaseOrderNumber] = useState({
+    PurchaseOrderNumber: '',
   });
 
-  const { SalesOrderNumber } = salesOrderNumber;
+  const { PurchaseOrderNumber } = purchaseOrderNumber;
 
   const handleOnChangeOrderNumber = (value, fieldName) => {
-    setSalesOrderNumber({ ...salesOrderNumber, [fieldName]: value });
+    setPurchaseOrderNumber({ ...purchaseOrderNumber, [fieldName]: value });
   };
 
   const [lineNumber, setLineNumber] = useState({
@@ -136,9 +136,12 @@ const UpdateSalesOrder = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrderNumber.SalesOrderNumber + "' and LineCreationSequenceNumber eq " + lineNumber.LineNumber;
+      const getLine = D365ResourceURL + "/data/PurchaseOrderLinesV2?$filter=PurchaseOrderNumber eq '" + purchaseOrderNumber.PurchaseOrderNumber + "' and LineNumber eq " + lineNumber.LineNumber;
 
       userAuthToken = "Bearer " + userAuthToken;
+
+      var statusError;
+      var errorMessage;
 
       const line = await axios({
         method: "get", 
@@ -165,30 +168,29 @@ const UpdateSalesOrder = () => {
       }
     );
 
-      if (line.data.value[0] == undefined)
-      {
-        statusError = true;
-        errorMessage = "An error occured." + "\n" + "No sales order line found." + "\n";
-      }
-      
-      if (statusError)
-      {
-        setError(errorMessage);
-        throw(errorMessage);
-      }
+    if (line.data.value[0] == undefined)
+    {
+      statusError = true;
+      errorMessage = "An error occured." + "\n" + "No purchase order line found." + "\n";
+    }
+    
+    if (statusError)
+    {
+      setError(errorMessage);
+      throw(errorMessage);
+    }
 
       //Parse out key fields
       const lineDetails = {
-        SalesOrderNumber: line.data.value[0].SalesOrderNumber,
+        PurchaseOrderNumber: line.data.value[0].PurchaseOrderNumber,
         ItemNumber: line.data.value[0].ItemNumber,
         LineNumber: line.data.value[0].LineNumber,
-        OrderedSalesQuantity: line.data.value[0].OrderedSalesQuantity.toString(),
-        LegalEntity: legalEntity.LegalEntity,
-        InventoryLotId: line.data.value[0].InventoryLotId,
+        OrderedPurchaseQuantity: line.data.value[0].OrderedPurchaseQuantity.toString(),
+        LegalEntity: legalEntity.LegalEntity
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("UpdateSalesOrderLine", {lineDetails: lineDetails});
+      navigation.navigate("UpdatePurchOrderLine", {lineDetails: lineDetails});
 
      } catch (error) {
       console.log(error);
@@ -201,8 +203,8 @@ const UpdateSalesOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='Update sales order record'
-        subHeading='Enter sales order line information'
+        leftHeading='Update purchase order record'
+        subHeading='Enter purchase order line information'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
         rightHeaderTranslateY={rightHeaderTranslateY}
@@ -215,17 +217,17 @@ const UpdateSalesOrder = () => {
         </Text>
       ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeOrderNumber(value, 'SalesOrderNumber')}
-        label='Sales Order Number'
-        placeholder='Sales order number'
+        value={PurchaseOrderNumber}
+        onChangeText={value => handleOnChangeOrderNumber(value, 'PurchaseOrderNumber')}
+        label='Purchase Order Number'
+        placeholder='Purchase order number'
         autoCapitalize='none'
       />
       <FormInput
         value={LineNumber}
         onChangeText={value => handleOnChangeLineNumber(value, 'LineNumber')}
-        label='Line Creation Sequence Number'
-        placeholder='Line creation sequence number'
+        label='Line Number'
+        placeholder='Line number'
         autoCapitalize='none'
       />
         <FormInput
@@ -265,4 +267,4 @@ const styles = StyleSheet.create({
   },
   });
 
-export default UpdateSalesOrder
+export default UpdatePurchOrder

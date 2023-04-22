@@ -9,49 +9,30 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
-import { getIn } from 'formik';
 
 const { width } = Dimensions.get('window');
 
-const UpdateSalesOrder = () => {
+const UpdatePurchOrderLine = ({route}) => {
 
   const navigation = useNavigation();
-  const { setIsLoggedIn, profile } = useLogin();
-
-  const [salesOrderNumber, setSalesOrderNumber] = useState({
-    SalesOrderNumber: '',
-  });
-
-  const { SalesOrderNumber } = salesOrderNumber;
-
-  const handleOnChangeOrderNumber = (value, fieldName) => {
-    setSalesOrderNumber({ ...salesOrderNumber, [fieldName]: value });
-  };
-
-  const [lineNumber, setLineNumber] = useState({
-    LineNumber: '',
-  });
-
-  const { LineNumber } = lineNumber;
-
-  const handleOnChangeLineNumber = (value, fieldName) => {
-    setLineNumber({ ...lineNumber, [fieldName]: value });
-  };
-
-  const [legalEntity, setLegalEntity] = useState({
-    LegalEntity: '',
-  });
-
-  const { LegalEntity } = legalEntity;
-
-  const handleOnChangeLegalEntity = (value, fieldName) => {
-    setLegalEntity({ ...legalEntity, [fieldName]: value });
-  };
+  const { lineDetails } = route.params;
 
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const { setIsLoggedIn, profile } = useLogin();
+
+  const [orderedPurchaseQuantity, setOrderedPurchaseQuantity] = useState({
+    OrderedPurchaseQuantity: '',
+  });
+
+  const { OrderedPurchaseQuantity } = orderedPurchaseQuantity;
+
+  const handleOnChange = (value, fieldName) => {
+    setOrderedPurchaseQuantity({ ...orderedPurchaseQuantity, [fieldName]: value });
+  };
 
   const animation = useRef(new Animated.Value(0)).current;
-  const scrollView = useRef(); 
 
   const rightHeaderOpacity = animation.interpolate({
     inputRange: [0, width],
@@ -136,13 +117,20 @@ const UpdateSalesOrder = () => {
       }
 
       //Make call to D365 to get sales order header information
-      const getLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrderNumber.SalesOrderNumber + "' and LineCreationSequenceNumber eq " + lineNumber.LineNumber;
+      const updatePurchLine = D365ResourceURL + "/data/PurchaseOrderLinesV2(PurchaseOrderNumber='" + lineDetails.PurchaseOrderNumber + "', LineNumber=" + lineDetails.LineNumber + ",dataAreaId='" + lineDetails.LegalEntity + "')";
+
+      const updatePurchLineBody = {
+        "OrderedPurchaseQuantity": parseInt(orderedPurchaseQuantity.OrderedPurchaseQuantity)
+    }
 
       userAuthToken = "Bearer " + userAuthToken;
 
-      const line = await axios({
-        method: "get", 
-        url: getLine,
+      var statusError = false;
+
+      const purchOrderLine = await axios({
+        method: "patch", 
+        url: updatePurchLine,
+        data: updatePurchLineBody,
         headers: { "Authorization": userAuthToken },
       }).catch( error => {
         statusError = true;
@@ -151,7 +139,7 @@ const UpdateSalesOrder = () => {
 
         if (errorMessage.includes("400"))
         {
-          errorMessage = "Status code: 400" + "\n" + "Confirm data is valid." + "\n";
+          errorMessage = "Status code: 400" + "\n" + "Unable to update purchase order line." + "\n";
         }
         else if (errorMessage.includes("500"))
         {
@@ -165,33 +153,22 @@ const UpdateSalesOrder = () => {
       }
     );
 
-      if (line.data.value[0] == undefined)
-      {
-        statusError = true;
-        errorMessage = "An error occured." + "\n" + "No sales order line found." + "\n";
-      }
-      
-      if (statusError)
-      {
-        setError(errorMessage);
-        throw(errorMessage);
-      }
-
-      //Parse out key fields
-      const lineDetails = {
-        SalesOrderNumber: line.data.value[0].SalesOrderNumber,
-        ItemNumber: line.data.value[0].ItemNumber,
-        LineNumber: line.data.value[0].LineNumber,
-        OrderedSalesQuantity: line.data.value[0].OrderedSalesQuantity.toString(),
-        LegalEntity: legalEntity.LegalEntity,
-        InventoryLotId: line.data.value[0].InventoryLotId,
-      }
-
-      //Redirect to new screen -> send in sales order information
-      navigation.navigate("UpdateSalesOrderLine", {lineDetails: lineDetails});
+    if (statusError)
+    {
+      setSuccess("");
+      setError(errorMessage);
+    }
+    else
+    {
+      setError("");
+      var successMsg = "Successfully updated purchase order line.";
+      setSuccess(successMsg);
+    }
 
      } catch (error) {
       console.log(error);
+      var errorMessage = "Unable to update purchase order line.";
+      setError(errorMessage);
      }
 };
 
@@ -201,8 +178,8 @@ const UpdateSalesOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='Update sales order record'
-        subHeading='Enter sales order line information'
+        leftHeading='Update purchase order line'
+        subHeading= {'Order Number: ' + lineDetails.PurchaseOrderNumber}
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
         rightHeaderTranslateY={rightHeaderTranslateY}
@@ -214,27 +191,29 @@ const UpdateSalesOrder = () => {
           {error}
         </Text>
       ) : null}
+      {success ? (
+        <Text style={{ color: 'green', fontSize: 18, textAlign: 'center', marginBottom: 15 }}>
+          {success}
+        </Text>
+      ) : null}
       <FormInput
-        value={SalesOrderNumber}
-        onChangeText={value => handleOnChangeOrderNumber(value, 'SalesOrderNumber')}
-        label='Sales Order Number'
-        placeholder='Sales order number'
+        value={lineDetails.ItemNumber}
+        label='Item Number'
+        placeholder='Item number'
         autoCapitalize='none'
+        allowEdit='false'
+        backgroundColor='lightgrey'
       />
       <FormInput
-        value={LineNumber}
-        onChangeText={value => handleOnChangeLineNumber(value, 'LineNumber')}
-        label='Line Creation Sequence Number'
-        placeholder='Line creation sequence number'
+        value={OrderedPurchaseQuantity}
+        onChangeText={value => handleOnChange(value, 'OrderedPurchaseQuantity')}
+        label='Ordered Quantity'
+        placeholder='Ordered quantity'
         autoCapitalize='none'
       />
-        <FormInput
-        value={LegalEntity}
-        onChangeText={value => handleOnChangeLegalEntity(value, 'LegalEntity')}
-        label='Legal Entity'
-        placeholder='Legal entity'
-        autoCapitalize='none'
-      />
+
+      <Divider width={10} color={'#f0f3f5' }/>
+
       <FormSubmitButton onPress={submitForm} title='Update order line' />
 
       <Divider width={10} color={'#f0f3f5' }/>
@@ -248,21 +227,4 @@ const UpdateSalesOrder = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-    backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'white',
-  },
-  });
-
-export default UpdateSalesOrder
+export default UpdatePurchOrderLine
