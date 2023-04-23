@@ -203,7 +203,7 @@ const UpdatePurchOrder = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='Update purchase order record'
+        leftHeading='Update purchase order'
         subHeading='Enter purchase order line information'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
