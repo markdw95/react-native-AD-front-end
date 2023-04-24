@@ -160,6 +160,7 @@ const AddPurchLine = () => {
       navigation.navigate("CreatePurchLine", {purchOrderData: purchOrderData});
 
      } catch (error) {
+      console.log(error);
      }
 };
 
