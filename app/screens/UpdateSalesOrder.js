@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -9,7 +9,6 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
-import { getIn } from 'formik';
 
 const { width } = Dimensions.get('window');
 
@@ -68,6 +67,34 @@ const UpdateSalesOrder = () => {
   });
 
   const submitForm = async () => {
+
+    if (profile.user.offlineMode || salesOrderNumber.SalesOrderNumber.includes("TMP_"))
+    {
+            var key = profile.user.email + "_Lines_" + "Order_" + salesOrderNumber.SalesOrderNumber;
+
+            console.log(key);
+
+            const lines = await AsyncStorage.getItem(key);
+
+            var salesLines = JSON.parse(lines);
+
+            var foundLineNumber = parseInt(lineNumber.LineNumber) - 1;
+
+            //Parse out key fields
+            const lineDetails = {
+              SalesOrderNumber: salesOrderNumber.SalesOrderNumber,
+              ItemNumber: salesLines[foundLineNumber].ItemNumber,
+              LineNumber: foundLineNumber,
+              OrderedSalesQuantity: salesLines[foundLineNumber].OrderedSalesQuantity,
+              LegalEntity: "",
+              InventoryLotId: "",
+            }
+
+            //Redirect to new screen -> send in sales order information
+            navigation.navigate("UpdateSalesOrderLine", {lineDetails: lineDetails});
+
+            return;
+    }
 
     try {
       //Make call to getUserConnectionInfo (send in email)
@@ -137,8 +164,6 @@ const UpdateSalesOrder = () => {
 
       //Make call to D365 to get sales order header information
       const getLine = D365ResourceURL + "/data/SalesOrderLines?$filter=SalesOrderNumber eq '" + salesOrderNumber.SalesOrderNumber + "' and LineCreationSequenceNumber eq " + lineNumber.LineNumber;
-
-      console.log(getLine);
 
       userAuthToken = "Bearer " + userAuthToken;
 
@@ -232,13 +257,14 @@ const UpdateSalesOrder = () => {
         placeholder='Line creation sequence number'
         autoCapitalize='none'
       />
+      {profile.user.offlineMode ? null : (
         <FormInput
         value={LegalEntity}
         onChangeText={value => handleOnChangeLegalEntity(value, 'LegalEntity')}
         label='Legal Entity'
         placeholder='Legal entity'
         autoCapitalize='none'
-      />
+      />)}
       <FormSubmitButton onPress={submitForm} title='Update order line' />
 
       <Divider width={10} color={'#f0f3f5' }/>

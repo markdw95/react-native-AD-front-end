@@ -14,6 +14,7 @@ import CATEGORIES from "../config/CATEGORIES";
 import COLORS from "../config/COLORS";
 import SPACING from "../config/SPACING";
 import { useNavigation } from "@react-navigation/native";
+import { useLogin } from '../context/LoginProvider';
 
 const WIDTH = Dimensions.get("screen").width;
 
@@ -21,6 +22,8 @@ const HomeScreen = () => {
 
   const [activeCategory, setActiveCategory] = useState(0);
   const navigation = useNavigation();
+
+  const { setIsLoggedIn, profile } = useLogin();
 
   return (
     <SafeAreaView>
@@ -32,14 +35,17 @@ const HomeScreen = () => {
               style={{ marginRight: SPACING }}
               key={category.id}
             >
-              <Text
+
+            {((profile.user.offlineMode && category.offline) || !profile.user.offlineMode) ? (
+            <Text
                 style={[
                   { fontSize: SPACING * 2, color: COLORS.dark },
                   activeCategory === index && { color: COLORS.primary },
                 ]}
               >
                 {category.title}
-              </Text>
+              </Text>) : null}
+
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -112,52 +118,58 @@ const HomeScreen = () => {
             alignItems: "center",
           }}
         >
-          <Text
-            style={{
-              fontSize: SPACING * 2,
-              fontWeight: "bold",
-              color: COLORS.dark,
-            }}
-          >
-            Need more information?
-          </Text>
+
+        {profile.user.offlineMode ? null : (
+            <Text
+              style={{
+                fontSize: SPACING * 2,
+                fontWeight: "bold",
+                color: COLORS.dark,
+              }}
+            >
+              Need more information?
+            </Text>
+          )}
 
         </View>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={{ marginVertical: SPACING * 2, width: WIDTH }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {CATEGORIES[activeCategory].info.map((info) => (
-            <TouchableOpacity
-              key={info.id}
-              style={{
-                marginRight: SPACING * 3,
-                padding: SPACING,
-                alignItems: "center",
-              }}
-              onPress={() => navigation.navigate(info.path)}
-            >
-              <View style={{ width: SPACING * 3, height: SPACING * 3 }}>
-                <Image
-                  source={info.image}
-                  resizeMode="contain"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </View>
-              <Text
+
+        {profile.user.offlineMode ? null : (
+          <ScrollView
+            horizontal
+            pagingEnabled
+            style={{ marginVertical: SPACING * 2, width: WIDTH }}
+            showsHorizontalScrollIndicator={false}
+          >
+            {CATEGORIES[activeCategory].info.map((info) => (
+              <TouchableOpacity
+                key={info.id}
                 style={{
-                  textTransform: "uppercase",
-                  fontSize: SPACING,
-                  marginTop: SPACING,
+                  marginRight: SPACING * 3,
+                  padding: SPACING,
+                  alignItems: "center",
                 }}
+                onPress={() => navigation.navigate(info.path)}
               >
-                {info.title}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+                <View style={{ width: SPACING * 3, height: SPACING * 3 }}>
+                  <Image
+                    source={info.image}
+                    resizeMode="contain"
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    textTransform: "uppercase",
+                    fontSize: SPACING,
+                    marginTop: SPACING,
+                  }}
+                >
+                  {info.title}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          )}
       </View>
     </SafeAreaView>
   );

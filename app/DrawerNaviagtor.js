@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, AsyncStorage } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -9,6 +9,8 @@ import COLORS from '../app/config/COLORS'
 import SPACING from "../app/config/SPACING";
 import Home from './components/Home';
 import Connection from './components/Connection';
+import PendingOrders from './components/PendingOrders';
+import PublishedOrders from './components/PublishedOrders';
 import { useLogin } from './context/LoginProvider';
 import UserProfile from './components/UserProfile';
 
@@ -16,6 +18,12 @@ const Drawer = createDrawerNavigator();
 
 const CustomDrawer = props => {
   const { setIsLoggedIn, profile } = useLogin();
+
+  const logOutUser = async () => {
+    await AsyncStorage.removeItem('jwtToken');
+    setIsLoggedIn(false);
+  }
+
   return (
     <View style={{ flex: 1}}>
       <DrawerContentScrollView {...props}>
@@ -46,7 +54,7 @@ const CustomDrawer = props => {
           backgroundColor: COLORS.light,
           padding: 20,
         }}
-        onPress={() => setIsLoggedIn(false)}
+        onPress={() => logOutUser()}
       >
         <Text>Log Out</Text>
       </TouchableOpacity>
@@ -55,6 +63,8 @@ const CustomDrawer = props => {
 };
 
 const DrawerNavigator = () => {
+  const { setIsLoggedIn, profile } = useLogin();
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -105,8 +115,10 @@ const DrawerNavigator = () => {
       }}
     >
       <Drawer.Screen component={Home} name='Home' />
-      <Drawer.Screen component={Connection} name='Connection'/>
-      <Drawer.Screen component={UserProfile} name='User Information'/>
+      {profile.user.offlineMode ? null : (<Drawer.Screen component={Connection} name='Connection'/>)}
+      {profile.user.offlineMode ? null : (<Drawer.Screen component={UserProfile} name='User Information'/>)}
+      <Drawer.Screen component={PublishedOrders} name='Published orders'/>
+      <Drawer.Screen component={PendingOrders} name='Pending orders' />
     </Drawer.Navigator>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Card, ListItem, Button, Icon, Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -9,6 +9,8 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
+import { Dropdown } from 'react-native-element-dropdown';
+import FormRowInput from '../components/FormRowInput';
 
 const { width } = Dimensions.get('window');
 
@@ -16,6 +18,9 @@ const CreateSalesOrder = () => {
 
   const navigation = useNavigation();
   const { setIsLoggedIn, profile } = useLogin();
+
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   const [customerNumber, setCustomerNumber] = useState({
     CustomerNumber: '',
@@ -28,6 +33,26 @@ const CreateSalesOrder = () => {
   };
 
   const [error, setError] = useState('');
+  const [referenceData, setReferenceData] = useState([]);
+
+  useEffect(() => {
+    loadReferenceData();
+  }, [])
+
+  const loadReferenceData = async () => {
+
+    var key = profile.user.email + "_Customers";
+
+    const localCustomerData = await AsyncStorage.getItem(key);
+
+    var customerData = [];
+
+    if (localCustomerData){
+      customerData = JSON.parse(localCustomerData);
+    }
+
+    setReferenceData(customerData);
+  }
 
   const animation = useRef(new Animated.Value(0)).current;
   const scrollView = useRef(); 
@@ -46,7 +71,83 @@ const CreateSalesOrder = () => {
     outputRange: [0, -20],
   });
 
+  const createPendingOrder = async () => {
+
+    var pendingOrderKey = profile.user.email + "_PendingOrderNumber";
+      
+    var latestPendingOrderNumber = await AsyncStorage.getItem(pendingOrderKey);
+
+    latestPendingOrderNumber++;
+
+    latestPendingOrderNumber = String(latestPendingOrderNumber).padStart(6, '0');
+
+    var pendingOrderNumber = "TMP_" + latestPendingOrderNumber;
+
+    var key = profile.user.email + "_Header_" + "Order_" + pendingOrderNumber; //Need to get latest temp number
+
+    var value = {
+    PendingNumber: pendingOrderNumber,
+    Customer: customerNumber.CustomerNumber,
+    };
+
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+
+    //Update latest temp number
+    await AsyncStorage.setItem(pendingOrderKey, latestPendingOrderNumber);
+
+    //Move to sales order line
+    const salesOrderData = {
+      CustAccount: value.Customer,
+      SalesOrderNumber: value.PendingNumber,
+      LineNumber: 1 
+    }
+
+    //Redirect to new screen -> send in sales order information
+    navigation.navigate("CreateSalesOrderEntryLines", {salesOrderData: salesOrderData});
+
+    return;
+
+  }
+
   const submitForm = async () => {
+
+    if (profile.user.offlineMode)
+    {
+      var pendingOrderKey = profile.user.email + "_PendingOrderNumber";
+      
+      var latestPendingOrderNumber = await AsyncStorage.getItem(pendingOrderKey);
+
+      latestPendingOrderNumber++;
+
+      latestPendingOrderNumber = String(latestPendingOrderNumber).padStart(6, '0');
+
+      var pendingOrderNumber = "TMP_" + latestPendingOrderNumber;
+
+      var key = profile.user.email + "_Header_" + "Order_" + pendingOrderNumber; //Need to get latest temp number
+
+      var value = {
+      PendingNumber: pendingOrderNumber,
+      Customer: customerNumber.CustomerNumber,
+      };
+
+      await AsyncStorage.setItem(key, JSON.stringify(value));
+
+      //Update latest temp number
+      await AsyncStorage.setItem(pendingOrderKey, latestPendingOrderNumber);
+
+      //Move to sales order line
+      const salesOrderData = {
+        CustAccount: value.Customer,
+        SalesOrderNumber: value.PendingNumber,
+        LineNumber: 1 
+      }
+
+      //Redirect to new screen -> send in sales order information
+      navigation.navigate("CreateSalesOrderEntryLines", {salesOrderData: salesOrderData});
+
+      return;
+    }
+
     try {
       //Make call to getUserConnectionInfo (send in email)
       const getConnectionInfo = {email: profile.user.email};
@@ -167,11 +268,12 @@ const CreateSalesOrder = () => {
       const salesOrderData = {
         CustAccount: salesOrderHeader.data.OrderingCustomerAccountNumber,
         SalesOrderNumber: salesOrderHeader.data.SalesOrderNumber,
-        LineNumber: 1 
+        LineNumber: 1,
+        dataAreaId: salesOrderHeader.data.dataAreaId,
       }
 
       //Redirect to new screen -> send in sales order information
-      navigation.navigate("CreateSalesOrderLine", {salesOrderData: salesOrderData});
+      navigation.navigate("CreateSalesOrderEntryLines", {salesOrderData: salesOrderData});
 
     } catch (error) {
       error = "Failed order creation";
@@ -197,14 +299,48 @@ const CreateSalesOrder = () => {
           {error}
         </Text>
       ) : null}
-      <FormInput
-        value={CustomerNumber}
-        onChangeText={value => handleOnChangeText(value, 'CustomerNumber')}
-        label='Customer Number'
-        placeholder='Customer number'
-        autoCapitalize='none'
-      />
+
+      <View style={styles.container}>
+
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            containerStyle={styles.containerStyle}
+            data={referenceData}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? '🔎' : '...'}
+            searchPlaceholder="Search..."
+            value={value}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={value => handleOnChangeText(value.value, 'CustomerNumber')}
+          />
+
+        
+        <FormRowInput
+          value={CustomerNumber}
+          onChangeText={value => handleOnChangeText(value, 'CustomerNumber')}
+          label='Customer Number'
+          placeholder='Customer number'
+          autoCapitalize='none'
+          inputWidth='85%'
+        />
+
+        </View>
+
+      <Divider width={10} color={'#f0f3f5' }/>
+
       <FormSubmitButton onPress={submitForm} title='Create sales order' />
+
+      <Divider width={10} color={'#f0f3f5' }/>
+
+      <FormSubmitButton onPress={createPendingOrder} title='Create pending order' />
 
       <Divider width={10} color={'#f0f3f5' }/>
 
@@ -217,21 +353,48 @@ const CreateSalesOrder = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-    backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
-  },
+  const styles = StyleSheet.create({
+    container: {
+      paddingBottom: 24,
+      flexDirection: 'row',
+    },
+    dropdown: {
+      borderColor: 'gray',
+      borderWidth: 0.5,
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      width: 60,
+      backgroundColor: 'rgba(242, 123, 65,1)'
+    },
+    icon: {
+      marginRight: 5,
+    },
+    label: {
+      position: 'absolute',
+      backgroundColor: 'white',
+      left: 22,
+      top: 8,
+      zIndex: 999,
+      paddingHorizontal: 8,
+      fontSize: 14,
+    },
+    placeholderStyle: {
+      fontSize: 16,
+    },
+    selectedTextStyle: {
+      fontSize: 16,
+    },
+    iconStyle: {
+      width: 20,
+      height: 20,
+    },
+    inputSearchStyle: {
+      height: 40,
+      fontSize: 16,
+    },
+    containerStyle: {
+      width: "600%"
+    }
   });
 
 export default CreateSalesOrder

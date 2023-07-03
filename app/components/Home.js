@@ -29,6 +29,8 @@ import UpdateSalesOrderLine from '../screens/UpdateSalesOrderLine';
 import UpdatePurchOrderLine from '../screens/UpdatePurchOrderLine';
 import AddPurchLine from '../screens/AddPurchLine';
 import AddSalesLine from '../screens/AddSalesLine';
+import PublishedOrders from './PublishedOrders';
+import CreateSalesOrderEntryLines from '../screens/CreateSalesOrderEntryLines';
 
 const Home = () => {
 
@@ -45,6 +47,7 @@ const Home = () => {
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="CreateSalesOrder" component={CreateSalesOrder} />
         <Stack.Screen name="CreateSalesOrderLine" component={CreateSalesOrderLine} />
+        <Stack.Screen name="CreateSalesOrderEntryLines" component={CreateSalesOrderEntryLines} />
         <Stack.Screen name="ViewSalesOrder" component={ViewSalesOrder} />
         <Stack.Screen name="DeleteSalesOrder" component={DeleteSalesOrder} />
         <Stack.Screen name="UpdateSalesOrder" component={UpdateSalesOrder} />
@@ -69,6 +72,7 @@ const Home = () => {
         <Stack.Screen name="ViewInventoryDetail" component={ViewInventoryDetail} />
         <Stack.Screen name="ViewWarehouse" component={ViewWarehouse} />
         <Stack.Screen name="ViewWarehouseDetail" component={ViewWarehouseDetail} />
+        <Stack.Screen name="PublishedOrders" component={PublishedOrders} />
       </Stack.Navigator>
     </NavigationContainer>
   );

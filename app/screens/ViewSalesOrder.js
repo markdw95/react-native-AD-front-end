@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -49,6 +49,73 @@ const ViewSalesOrder = () => {
   const submitForm = async () => {
 
     try {
+      if (profile.user.offlineMode || salesOrder.SalesOrderNumber.includes("TMP_"))
+      {
+        var keyHeader = profile.user.email + "_Header_" + "Order_" + salesOrder.SalesOrderNumber;
+
+        var headerData = await AsyncStorage.getItem(keyHeader);
+
+        headerData = JSON.parse(headerData);
+
+        if (!headerData)
+        {
+          setError("No order found");
+          throw error("No order found");
+        }
+
+        //Parse out key fields
+        const salesOrderHeaderDetails = {
+          SalesOrderNumber: headerData.PendingNumber,
+          OrderingCustomerAccountNumber: headerData.Customer,
+          SalesOrderStatus: "",
+          SalesOrderPoolId: "",
+          PaymentTermsName: "",
+          SalesOrderName: ""
+        }
+
+        var keyLine = profile.user.email + "_Lines_" + "Order_" + salesOrder.SalesOrderNumber;
+
+        var lineData = await AsyncStorage.getItem(keyLine);
+
+        var salesOrderLines = [];
+        var lineArray = [];
+
+        if (lineData)
+        {
+            salesOrderLines = JSON.parse(lineData);
+
+            var i = 1;
+
+            //Parse out key fields -> 1st only for now
+            for (let line of salesOrderLines) {
+              lineArray.push({
+                SalesOrderNumber: line.SalesOrderNumber,
+                ItemNumber: line.ItemNumber,
+                LineCreationSequenceNumber: parseInt(i),
+                OrderedSalesQuantity: line.OrderedSalesQuantity,
+                SalesUnitSymbol: "",
+                ShippingWarehouseId: "",
+                ShippingSiteId: "",
+                SalesPrice: "",
+                SalesOrderLineStatus: "",
+                LineDescription: "",
+              });
+
+              i++;
+            }
+
+        }
+
+        const salesOrderLineDetails = {
+          salesLines: lineArray
+        }
+
+        //Redirect to new screen -> send in sales order information
+        navigation.navigate("ViewSalesOrderDetail", {salesOrderHeader: salesOrderHeaderDetails, salesOrderLines: salesOrderLineDetails});
+
+        return;
+      }
+
       //Make call to getUserConnectionInfo (send in email)
       const getConnectionInfo = {email: profile.user.email};
 

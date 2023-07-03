@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Card, ListItem, Button, Icon, Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -65,6 +65,55 @@ const CreateSalesOrderLine = ({route}) => {
   });
 
   const submitForm = async () => {
+
+    //Offline mode
+    if (profile.user.offlineMode || salesItemData.SalesOrderNumber.includes("TMP_"))
+    {
+      var key = profile.user.email + "_Lines_" + "Order_" + salesItemData.SalesOrderNumber;
+
+      const postSalesOrderLineBody = {
+        "SalesOrderNumber": salesItemData.SalesOrderNumber,
+        "ItemNumber": salesItemData.ItemNumber,
+        "OrderedSalesQuantity":parseInt(salesItemData.SalesQty)
+      };
+
+      var salesOrderLines = [];
+
+      const prevSalesOrderLines = await AsyncStorage.getItem(key);
+
+      if (prevSalesOrderLines)
+      {
+        salesOrderLines = JSON.parse(prevSalesOrderLines);
+      }
+      else
+      {
+        await AsyncStorage.setItem(key, JSON.stringify([]));
+      }
+
+      salesOrderLines.push(postSalesOrderLineBody);
+
+      await AsyncStorage.setItem(key, JSON.stringify(salesOrderLines));
+
+      //Update the line number for the next line
+      var updateLineNum = salesItemData.LineNumber + 1;
+
+      //This will clear the data for the next line to be inserted
+      setSalesItemData({ 
+        CustomerNumber: salesOrderData.CustAccount,
+        ItemNumber: '',
+        SalesQty: '',
+        SalesOrderNumber: salesOrderData.SalesOrderNumber,
+        LineNumber: updateLineNum
+      });
+
+
+      var successMsg = "Successfully created sales line";
+      setSuccess(successMsg);
+
+      return;
+    }
+
+
     try {
       //Make call to getUserConnectionInfo (send in email)
       const getConnectionInfo = {email: profile.user.email};
@@ -190,7 +239,7 @@ const CreateSalesOrderLine = ({route}) => {
     });
 
 
-    var successMsg = "Successfully created line number " + salesItemData.LineNumber;
+    var successMsg = "Successfully created sales line";
     setSuccess(successMsg);
 
     } catch (error) {

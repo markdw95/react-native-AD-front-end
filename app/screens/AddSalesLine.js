@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -47,6 +47,43 @@ const AddSalesLine = () => {
   });
 
   const submitForm = async () => {
+
+     //Offline mode
+     if (profile.user.offlineMode || salesOrder.SalesOrderNumber.includes("TMP_"))
+     {
+      var keyHeader = profile.user.email + "_Header_" + "Order_" + salesOrder.SalesOrderNumber;
+
+      console.log(keyHeader);
+
+      var header = await AsyncStorage.getItem(keyHeader);
+
+      var headerData = JSON.parse(header);
+
+       var keyLines = profile.user.email + "_Lines_" + "Order_" + salesOrder.SalesOrderNumber;
+
+       var lines = await AsyncStorage.getItem(keyLines);
+
+       var salesLines = JSON.parse(lines);
+
+       var lineNumber = 0;
+
+       if (salesLines)
+       {
+        lineNumber = salesLines.length;
+       }
+ 
+        //Parse out key fields
+        const salesOrderData = {
+          CustAccount: headerData.Customer,
+          SalesOrderNumber: headerData.PendingNumber,
+          LineNumber: lineNumber
+        }
+
+        //Redirect to new screen -> send in sales order information
+        navigation.navigate("CreateSalesOrderLine", {salesOrderData: salesOrderData});
+ 
+       return;
+     }
 
     try {
       //Make call to getUserConnectionInfo (send in email)
@@ -170,7 +207,7 @@ const AddSalesLine = () => {
   
     <View style={{ height: 80 }}>
       <FormHeader
-        leftHeading='View sales order'
+        leftHeading='Add to sales order'
         subHeading='Enter sales order number'
         rightHeaderOpacity={rightHeaderOpacity}
         leftHeaderTranslateX={leftHeaderTranslateX}
@@ -190,7 +227,7 @@ const AddSalesLine = () => {
         placeholder='Sales order number'
         autoCapitalize='none'
       />
-      <FormSubmitButton onPress={submitForm} title='View sales order' />
+      <FormSubmitButton onPress={submitForm} title='Add to sales order' />
 
       <Divider width={10} color={'#f0f3f5' }/>
 

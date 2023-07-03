@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Animated, Dimensions } from 'react-native';
+import { View, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -9,6 +9,7 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
+import PendingOrders from '../components/PendingOrders';
 
 const { width } = Dimensions.get('window');
 
@@ -58,6 +59,25 @@ const DeleteSalesOrder = () => {
   });
 
   const submitForm = async () => {
+
+    if (profile.user.offlineMode || salesOrderNumber.SalesOrderNumber.includes("TMP_"))
+    {
+      //Remove order from local storage
+      var keyLine = profile.user.email + "_Lines_" + "Order_" + salesOrderNumber.SalesOrderNumber;
+
+      await AsyncStorage.removeItem(keyLine);
+
+      var keyHeader = profile.user.email + "_Header_" + "Order_" + salesOrderNumber.SalesOrderNumber;
+
+      await AsyncStorage.removeItem(keyHeader);
+
+      var successMsg = "Successfully deleted sales order.";
+      setSuccess(successMsg);
+
+      PendingOrders.loadOrders();
+
+      return;
+    }
 
     try {
       //Make call to getUserConnectionInfo (send in email)
@@ -207,13 +227,14 @@ const DeleteSalesOrder = () => {
         placeholder='Sales Order number'
         autoCapitalize='none'
       />
+      {profile.user.offlineMode ? null : (
       <FormInput
         value={LegalEntity}
         onChangeText={value => handleOnChangeSite(value, 'LegalEntity')}
         label='Legal Entity'
         placeholder='Legal Entity'
         autoCapitalize='none'
-      />
+      />)}
       <FormSubmitButton onPress={submitForm} title='Delete sales order' />
 
       <Divider width={10} color={'#f0f3f5' }/>

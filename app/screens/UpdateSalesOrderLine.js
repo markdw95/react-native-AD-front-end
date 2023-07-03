@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -50,6 +50,27 @@ const UpdateSalesOrderLine = ({route}) => {
   });
 
   const deleteLine = async () => {
+
+    if (profile.user.offlineMode || lineDetails.SalesOrderNumber.includes("TMP_"))
+    {
+      //Find record and remove it from array
+      var key = profile.user.email + "_Lines_" + "Order_" + lineDetails.SalesOrderNumber;
+
+      const lines = await AsyncStorage.getItem(key);
+
+      var salesLines = JSON.parse(lines);
+
+      if (lineDetails.LineNumber > -1) { // only splice array when item is found
+        salesLines.splice(lineDetails.LineNumber, 1); // 2nd parameter means remove one item only
+      }
+
+      await AsyncStorage.setItem(key, JSON.stringify(salesLines));
+
+      var successMsg = "Successfully deleted sales order line.\n Click Back to return to the home screen.";
+      setSuccess(successMsg);
+
+      return;
+    }
 
     try {
       //Make call to getUserConnectionInfo (send in email)
@@ -169,6 +190,25 @@ const UpdateSalesOrderLine = ({route}) => {
 };
 
   const submitForm = async () => {
+
+    if (profile.user.offlineMode || lineDetails.SalesOrderNumber.includes("TMP_"))
+    {
+      //Find record and update array
+      var key = profile.user.email + "_Lines_" + "Order_" + lineDetails.SalesOrderNumber;
+
+      const lines = await AsyncStorage.getItem(key);
+
+      var salesLines = JSON.parse(lines);
+
+      salesLines[lineDetails.LineNumber].OrderedSalesQuantity = orderedSalesQuantity.OrderedSalesQuantity;
+
+      await AsyncStorage.setItem(key, JSON.stringify(salesLines));
+
+      var successMsg = "Successfully updated sales order line.\n Click Back to return to the home screen.";
+      setSuccess(successMsg);
+
+      return;
+    }
 
     try {
       //Make call to getUserConnectionInfo (send in email)

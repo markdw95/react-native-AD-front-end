@@ -1,9 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Dimensions, AsyncStorage } from 'react-native';
+import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import { Container, Cover, Image, CSTitle, Content, Wrapper, Caption, Subtitle } from '../components/Card_Styles';
 import FormContainer from '../components/FormContainer';
 import FormSubmitButton from '../components/FormSubmitButton';
+import helpers from '../helpers/helper';
+import { useLogin } from '../context/LoginProvider';
 
 import {
   CardButton,
@@ -14,8 +17,86 @@ const screenWidth = Dimensions.get('window').width;
 const ViewSalesOrderDetail = ({route}) => {
 
   const navigation = useNavigation();
+  const { setIsLoggedIn, profile } = useLogin();
 
   const { salesOrderHeader, salesOrderLines } = route.params;
+
+  const createPendingOrder = async () => {
+    if (profile.user.offlineMode)
+    {
+      setError("Can not publish orders in offline mode");
+    }
+
+    else
+    {
+
+      var userAuthInfo = await helpers.getAuthToken(profile);
+
+      var createdOrders = [];
+      var partiallyCreatedOrders = [];
+      var failedOrders = [];
+
+      var key = profile.user.email + "_Header_" + "Order_" + salesOrderHeader.SalesOrderNumber;
+
+      var pendingOrder = await AsyncStorage.getItem(key);
+
+      var currentPendingOrder = JSON.parse(pendingOrder);
+
+      //Create order header
+      const returnHeaderValue = await helpers.createSalesOrderHeader(currentPendingOrder, userAuthInfo);
+
+      if (returnHeaderValue.status == "Created")
+      {
+            //Get pending order line data
+            const currentPendingOrderLinesKey = profile.user.email + "_Lines_Order_" + salesOrderHeader.SalesOrderNumber;
+
+            var currentPendingOrderLines = await AsyncStorage.getItem(currentPendingOrderLinesKey);
+
+            currentPendingOrderLines = JSON.parse(currentPendingOrderLines);
+
+            var linesCreated = true;
+
+            //Create each line
+            for (var currentPendingOrderLine of currentPendingOrderLines)
+            {
+              currentPendingOrderLine.PendingNumber = returnHeaderValue.SalesOrderNumber;
+
+              //Create order line - Log if there is an error
+              const returnLineValue = await helpers.createSalesOrderLine(currentPendingOrderLine, userAuthInfo);
+
+              if (returnLineValue.status != "Created")
+              {
+                  linesCreated = false;
+                  returnHeaderValue.message += " - " + returnLineValue.message;
+              }
+            }
+
+            if (linesCreated)
+            {
+              createdOrders.push(returnHeaderValue);
+            }
+            else
+            {
+              partiallyCreatedOrders.push(returnHeaderValue);
+            }
+
+            //Remove lines from storage
+            await AsyncStorage.removeItem(currentPendingOrderLinesKey);
+
+            //Remove header from storage
+            const currentPendingOrderHeaderKey = profile.user.email + "_Header_Order_" + salesOrderHeader.SalesOrderNumber;
+            await AsyncStorage.removeItem(currentPendingOrderHeaderKey);
+      }
+      else
+      {
+        failedOrders.push(returnHeaderValue);
+      }
+
+
+      //Navigate to a 'Published page' - send in createdOrders, PartiallyCreatedOrders, and failedOrders
+      navigation.navigate("PublishedOrders", {createdOrders: createdOrders, partiallyCreatedOrders: partiallyCreatedOrders, failedOrders: failedOrders});
+    }
+  }
 
 return (
   <View>
@@ -78,6 +159,11 @@ return (
 
     <FormContainer>
         <FormSubmitButton onPress={() => navigation.navigate("HomeScreen")} title='Back' />
+
+        <Divider width={10} color={'#f0f3f5' }/>
+
+        {salesOrderHeader.SalesOrderNumber.includes("TMP_") ? (<FormSubmitButton onPress={createPendingOrder} title='Publish Pending Order' />) : null}
+
     </FormContainer>
 
     </ScrollView>

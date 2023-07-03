@@ -8,12 +8,14 @@ export default [
     id: 1,
     title: "Sales Orders",
     operations: [...OPERATIONS],
-    info: [...SALESINFO]
+    info: [...SALESINFO],
+    offline: true
   },
   {
     id: 2,
     title: "Purchase Orders",
     operations: [...POOPERATIONS],
-    info: [...PURCHASEINFO]
+    info: [...PURCHASEINFO],
+    offline: false
   }
 ];
