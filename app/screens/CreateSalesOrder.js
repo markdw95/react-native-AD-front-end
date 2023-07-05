@@ -33,6 +33,7 @@ const CreateSalesOrder = () => {
   };
 
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState('');
   const [referenceData, setReferenceData] = useState([]);
 
   useEffect(() => {
@@ -149,6 +150,9 @@ const CreateSalesOrder = () => {
     }
 
     try {
+
+      setLoading('Creating new order in D365...');
+
       //Make call to getUserConnectionInfo (send in email)
       const getConnectionInfo = {email: profile.user.email};
 
@@ -264,6 +268,8 @@ const CreateSalesOrder = () => {
         throw error(errorMessage);
       }
 
+      setLoading('');
+
       //Parse out key fields
       const salesOrderData = {
         CustAccount: salesOrderHeader.data.OrderingCustomerAccountNumber,
@@ -297,6 +303,11 @@ const CreateSalesOrder = () => {
       {error ? (
         <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
           {error}
+        </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+          {loading}
         </Text>
       ) : null}
 

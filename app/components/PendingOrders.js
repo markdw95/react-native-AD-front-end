@@ -32,6 +32,7 @@ const PendingOrders = () => {
 
   const [orders, setOrders] = useState([])
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState('');
 
   useEffect(() => {
     loadOrders()
@@ -89,6 +90,7 @@ const PendingOrders = () => {
     }
     else
     {
+      setLoading("Publishing orders to D365...");
 
       var userAuthInfo = await helpers.getAuthToken(profile);
 
@@ -191,6 +193,11 @@ const PendingOrders = () => {
         {error ? (
           <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
             {error}
+          </Text>
+        ) : null}
+        {loading ? (
+          <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+            {loading}
           </Text>
         ) : null}
         <FormSubmitButton onPress={PublishAll} title='Publish All' />

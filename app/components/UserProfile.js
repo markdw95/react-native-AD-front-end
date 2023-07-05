@@ -22,6 +22,7 @@ const UserProfile = () => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState('');
 
   const rightHeaderOpacity = animation.interpolate({
     inputRange: [0, width],
@@ -45,7 +46,8 @@ const UserProfile = () => {
     }
     else
     {
-      console.log("Pulling reference data...");
+      setSuccess('');
+      setLoading("Pulling reference data...");
 
       var userAuthInfo = await helpers.getAuthToken(profile);
 
@@ -61,6 +63,7 @@ const UserProfile = () => {
 
       await AsyncStorage.setItem(key, JSON.stringify(itemData));
 
+      setLoading('');
       setSuccess("Reference data updated.");
     }
   }
@@ -123,6 +126,11 @@ const UserProfile = () => {
             {error ? (
             <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', paddingBottom: 10 }}>
               {error}
+            </Text>
+          ) : null}
+          {loading ? (
+            <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', paddingBottom: 10 }}>
+              {loading}
             </Text>
           ) : null}
             {success ? (

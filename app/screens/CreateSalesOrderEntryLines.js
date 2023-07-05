@@ -84,6 +84,7 @@ const CreateSalesOrderEntryLines = ({route}) => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState('');
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [referenceData, setReferenceData] = useState([]);
@@ -114,12 +115,16 @@ const CreateSalesOrderEntryLines = ({route}) => {
     }
     else
     {
+      setLoading('Pulling lines from latest order...');
+
        //remove from D365
        var userAuthInfo = await helpers.getAuthToken(profile);
 
        const localSalesLines = await helpers.replaceLastOrder(salesOrderData, userAuthInfo);
 
        setSalesLines(localSalesLines);
+
+       setLoading('');
     }
   }
 
@@ -148,10 +153,14 @@ const CreateSalesOrderEntryLines = ({route}) => {
     }
     else
     {
+      setLoading('Deleting order in D365...');
+
       //remove from D365
       var userAuthInfo = await helpers.getAuthToken(profile);
 
       await helpers.deleteSalesOrderHeader(salesOrderData.SalesOrderNumber, salesOrderData.dataAreaId, userAuthInfo);
+
+      setLoading('');
 
       navigation.navigate("HomeScreen");
     }
@@ -170,6 +179,8 @@ const CreateSalesOrderEntryLines = ({route}) => {
       }
       else
       {
+        setLoading("Publishing order to D365...");
+
         var userAuthInfo = await helpers.getAuthToken(profile);
 
         var createdOrders = [];
@@ -291,6 +302,17 @@ const CreateSalesOrderEntryLines = ({route}) => {
         }) : null}
 
   </ScrollView>
+
+      {error ? (
+        <Text style={{ color: 'red', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+          {error}
+        </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+          {loading}
+        </Text>
+      ) : null}
   
     <View style={styles.buttonContainer}>
     <View style={styles.item}>
