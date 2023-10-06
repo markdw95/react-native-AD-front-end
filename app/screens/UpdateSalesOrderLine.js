@@ -10,6 +10,7 @@ import FormHeader from '../components/FormHeader';
 import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
+import helpers from '../helpers/helper';
 
 const { width } = Dimensions.get('window');
 
@@ -20,6 +21,7 @@ const UpdateSalesOrderLine = ({route}) => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState('');
 
   const { setIsLoggedIn, profile } = useLogin();
 
@@ -73,75 +75,16 @@ const UpdateSalesOrderLine = ({route}) => {
     }
 
     try {
-      //Make call to getUserConnectionInfo (send in email)
-      const getConnectionInfo = {email: profile.user.email};
+      setSuccess("");
+      setError("");
+      setLoading("Deleting sales line...");
 
-      const res = await client.post('/getConnectionInfo', getConnectionInfo, {
-        headers: {
-          Accept: 'application/json',
-          authorization: `JWT ${profile.token}`,
-        },
-      });
-      
-      const D365ResourceURL   = res.data.formData.D365ResourceURL;
-      const AuthHostURL       = res.data.formData.AuthHostURL;
-      const AuthClientId      = res.data.formData.AuthClientId;
-      const AuthClientSecret  = res.data.formData.AuthClientSecret;
-      const AuthToken         = res.data.formData.AuthToken;
-      const AuthTokenExp      = res.data.formData.AuthTokenExp;
-
-      //No connection found
-      if (D365ResourceURL == '' || AuthHostURL == '' || AuthClientId == '' || AuthClientSecret == '')
-      {
-          var noConnectionFound = "No connection found.\n Please enter a valid connection and try again."
-          setError(noConnectionFound);
-          throw error(noConnectionFound);
-      }
-
-      const currentTimeSeconds = new Date().getTime() / 1000;
-
-      var userAuthToken;
-
-      //Check auth token, if expired get new token and update token in data base (updateUserConnectionToken)
-      if (AuthTokenExp == '' || AuthTokenExp < currentTimeSeconds)
-      {
-          //Set up new axios client based on connection info
-           var formdata = new FormData();
-           formdata.append("resource", D365ResourceURL);
-           formdata.append("client_id", AuthClientId);
-           formdata.append("client_secret", AuthClientSecret);
-           formdata.append("grant_type", "client_credentials")
-
-           const dynamicRes = await axios({
-             method: "post",
-             url: AuthHostURL,
-             data: formdata,
-             headers: { "Content-Type": "multipart/form-data" },
-           })
-
-           userAuthToken = dynamicRes.data.access_token;
-
-           var updatedTokenExp = +currentTimeSeconds + +dynamicRes.data.expires_in;
-
-           const updateUserConnectionToken = {email: profile.user.email, AuthTokenExp: updatedTokenExp, AuthToken: userAuthToken};
-
-           const updatedTokenRes = await client.post('/updateUserConnectionToken', updateUserConnectionToken, {
-            headers: {
-              Accept: 'application/json',
-              authorization: `JWT ${profile.token}`,
-            },
-          });
-
-      }
-      else
-      {
-        userAuthToken = AuthToken;
-      }
+      var userAuthInfo = await helpers.getAuthToken(profile);
 
       //Make call to D365 to get sales order header information
-      const updateSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines(InventoryLotId='" + lineDetails.InventoryLotId + "',dataAreaId='" + lineDetails.LegalEntity + "')";
+      const updateSalesOrderLine = userAuthInfo.D365ResourceURL + "/data/SalesOrderLines(InventoryLotId='" + lineDetails.InventoryLotId + "',dataAreaId='" + lineDetails.LegalEntity + "')";
 
-      userAuthToken = "Bearer " + userAuthToken;
+      var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
       var statusError = false;
 
@@ -186,7 +129,10 @@ const UpdateSalesOrderLine = ({route}) => {
       console.log(error);
       var errorMessage = "Unable to delete sales order line.";
       setError(errorMessage);
+      setLoading("");
      }
+
+     setLoading("");
 };
 
   const submitForm = async () => {
@@ -211,79 +157,20 @@ const UpdateSalesOrderLine = ({route}) => {
     }
 
     try {
-      //Make call to getUserConnectionInfo (send in email)
-      const getConnectionInfo = {email: profile.user.email};
+      setSuccess("");
+      setError("");
+      setLoading("Updating sales line...");
 
-      const res = await client.post('/getConnectionInfo', getConnectionInfo, {
-        headers: {
-          Accept: 'application/json',
-          authorization: `JWT ${profile.token}`,
-        },
-      });
-      
-      const D365ResourceURL   = res.data.formData.D365ResourceURL;
-      const AuthHostURL       = res.data.formData.AuthHostURL;
-      const AuthClientId      = res.data.formData.AuthClientId;
-      const AuthClientSecret  = res.data.formData.AuthClientSecret;
-      const AuthToken         = res.data.formData.AuthToken;
-      const AuthTokenExp      = res.data.formData.AuthTokenExp;
-
-      //No connection found
-      if (D365ResourceURL == '' || AuthHostURL == '' || AuthClientId == '' || AuthClientSecret == '')
-      {
-          var noConnectionFound = "No connection found.\n Please enter a valid connection and try again."
-          setError(noConnectionFound);
-          throw error(noConnectionFound);
-      }
-
-      const currentTimeSeconds = new Date().getTime() / 1000;
-
-      var userAuthToken;
-
-      //Check auth token, if expired get new token and update token in data base (updateUserConnectionToken)
-      if (AuthTokenExp == '' || AuthTokenExp < currentTimeSeconds)
-      {
-          //Set up new axios client based on connection info
-           var formdata = new FormData();
-           formdata.append("resource", D365ResourceURL);
-           formdata.append("client_id", AuthClientId);
-           formdata.append("client_secret", AuthClientSecret);
-           formdata.append("grant_type", "client_credentials")
-
-           const dynamicRes = await axios({
-             method: "post",
-             url: AuthHostURL,
-             data: formdata,
-             headers: { "Content-Type": "multipart/form-data" },
-           })
-
-           userAuthToken = dynamicRes.data.access_token;
-
-           var updatedTokenExp = +currentTimeSeconds + +dynamicRes.data.expires_in;
-
-           const updateUserConnectionToken = {email: profile.user.email, AuthTokenExp: updatedTokenExp, AuthToken: userAuthToken};
-
-           const updatedTokenRes = await client.post('/updateUserConnectionToken', updateUserConnectionToken, {
-            headers: {
-              Accept: 'application/json',
-              authorization: `JWT ${profile.token}`,
-            },
-          });
-
-      }
-      else
-      {
-        userAuthToken = AuthToken;
-      }
-
+      var userAuthInfo = await helpers.getAuthToken(profile);
+     
       //Make call to D365 to get sales order header information
-      const updateSalesOrderLine = D365ResourceURL + "/data/SalesOrderLines(InventoryLotId='" + lineDetails.InventoryLotId + "',dataAreaId='" + lineDetails.LegalEntity + "')";
+      const updateSalesOrderLine = userAuthInfo.D365ResourceURL + "/data/SalesOrderLines(InventoryLotId='" + lineDetails.InventoryLotId + "',dataAreaId='" + lineDetails.LegalEntity + "')";
 
       const patchSalesOrderLineBody = {
         "OrderedSalesQuantity": parseInt(orderedSalesQuantity.OrderedSalesQuantity)
     }
 
-      userAuthToken = "Bearer " + userAuthToken;
+      var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
       var statusError = false;
 
@@ -329,7 +216,10 @@ const UpdateSalesOrderLine = ({route}) => {
       console.log(error);
       var errorMessage = "Unable to update sales order line.";
       setError(errorMessage);
+      setLoading("");
      }
+
+     setLoading("");
 };
 
   return (
@@ -354,6 +244,11 @@ const UpdateSalesOrderLine = ({route}) => {
       {success ? (
         <Text style={{ color: 'green', fontSize: 18, textAlign: 'center', marginBottom: 15 }}>
           {success}
+        </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+          {loading}
         </Text>
       ) : null}
       <FormInput

@@ -9,15 +9,11 @@ const helpers = {
 
     var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
-    var errorMessage = "";
-
     const salesOrder = await axios({
       method: "get", 
       url: salesHeaderData,
       headers: { "Authorization": userAuthToken },
     });
-
-    console.log(salesOrder);
 
     //Parse out key field
     var dataAreaId =  salesOrder.data.value[0].dataAreaId;

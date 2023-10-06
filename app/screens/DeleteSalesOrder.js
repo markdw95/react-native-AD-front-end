@@ -31,6 +31,7 @@ const DeleteSalesOrder = () => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState('');
 
   const animation = useRef(new Animated.Value(0)).current;
   const scrollView = useRef(); 
@@ -71,6 +72,9 @@ const DeleteSalesOrder = () => {
     }
 
     try {
+
+      setLoading("Deleting sales order...");
+
       var userAuthInfo = await helpers.getAuthToken(profile);
 
       var dataAreaId = await helpers.getDataAreaId(salesOrderNumber.SalesOrderNumber, userAuthInfo);
@@ -78,7 +82,7 @@ const DeleteSalesOrder = () => {
       //Make call to D365 to get sales order header information
       const deleteSalesOrder = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2(SalesOrderNumber= '" + salesOrderNumber.SalesOrderNumber + "', dataAreaId='" + dataAreaId + "')"
 
-      userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
+      var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
       var statusError = false;
 
@@ -123,7 +127,10 @@ const DeleteSalesOrder = () => {
       console.log(error);
       var errorMessage = "Unable to delete sales order.";
       setError(errorMessage);
+      setLoading("");
      }
+
+     setLoading("");
 };
 
   return (
@@ -148,6 +155,11 @@ const DeleteSalesOrder = () => {
       {success ? (
         <Text style={{ color: 'green', fontSize: 18, textAlign: 'center', marginBottom: 15 }}>
           {success}
+        </Text>
+      ) : null}
+      {loading ? (
+        <Text style={{ color: 'orange', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+          {loading}
         </Text>
       ) : null}
       <FormInput
