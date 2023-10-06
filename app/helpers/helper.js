@@ -2,6 +2,28 @@ import client from '../api/client';
 import axios from 'axios';
 
 const helpers = {
+  getDataAreaId: async function(salesOrderNumber, userAuthInfo){
+
+    //Make call to D365 to get sales order header information
+    const salesHeaderData = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2?$filter=SalesOrderNumber eq '" + salesOrderNumber +  "'"
+
+    var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
+
+    var errorMessage = "";
+
+    const salesOrder = await axios({
+      method: "get", 
+      url: salesHeaderData,
+      headers: { "Authorization": userAuthToken },
+    });
+
+    console.log(salesOrder);
+
+    //Parse out key field
+    var dataAreaId =  salesOrder.data.value[0].dataAreaId;
+
+    return dataAreaId;
+  },
     deleteSalesOrderHeader: async function(salesOrderNumber, dataAreaId, userAuthInfo){
           //Make call to D365 to get sales order header information
           const deleteSalesOrder = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2(SalesOrderNumber= '" + salesOrderNumber + "', dataAreaId='" + dataAreaId + "')"
@@ -37,8 +59,17 @@ const helpers = {
     },
     replaceLastOrder: async function(salesOrderData, userAuthInfo){
 
+      var count = 2;
+
+      if (salesOrderData.SalesOrderNumber.includes("TMP"))
+      {
+        count = 1;
+      }
+
+      var index = count - 1;
+
       //Make call to D365 to get sales order header information
-      const salesHeaderData = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2?$top=1&$orderby=OrderCreationDateTime desc&$select=SalesOrderNumber&$filter=OrderingCustomerAccountNumber eq '" + salesOrderData.CustAccount +  "'"
+      const salesHeaderData = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2?$top= " + count + "&$orderby=OrderCreationDateTime desc&$select=SalesOrderNumber&$filter=OrderingCustomerAccountNumber eq '" + salesOrderData.CustAccount +  "'"
 
       var userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
@@ -51,7 +82,7 @@ const helpers = {
       })
 
     //Parse out key field
-    var salesOrderNumber =  salesOrder.data.value[0].SalesOrderNumber;
+    var salesOrderNumber =  salesOrder.data.value[index].SalesOrderNumber;
 
 
     //Make call to D365 to get sales order line information

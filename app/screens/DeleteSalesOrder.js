@@ -10,6 +10,7 @@ import { useLogin } from '../context/LoginProvider';
 import client from '../api/client';
 import axios from 'axios';
 import PendingOrders from '../components/PendingOrders';
+import helpers from '../helpers/helper';
 
 const { width } = Dimensions.get('window');
 
@@ -26,16 +27,6 @@ const DeleteSalesOrder = () => {
 
   const handleOnChangeItem = (value, fieldName) => {
     setSalesOrderNumber({ ...salesOrderNumber, [fieldName]: value });
-  };
-
-  const [legalEntity, setLegalEntity] = useState({
-    LegalEntity: '',
-  });
-
-  const { LegalEntity } = legalEntity;
-
-  const handleOnChangeSite = (value, fieldName) => {
-    setLegalEntity({ ...legalEntity, [fieldName]: value });
   };
 
   const [error, setError] = useState('');
@@ -80,75 +71,14 @@ const DeleteSalesOrder = () => {
     }
 
     try {
-      //Make call to getUserConnectionInfo (send in email)
-      const getConnectionInfo = {email: profile.user.email};
+      var userAuthInfo = await helpers.getAuthToken(profile);
 
-      const res = await client.post('/getConnectionInfo', getConnectionInfo, {
-        headers: {
-          Accept: 'application/json',
-          authorization: `JWT ${profile.token}`,
-        },
-      });
-      
-      const D365ResourceURL   = res.data.formData.D365ResourceURL;
-      const AuthHostURL       = res.data.formData.AuthHostURL;
-      const AuthClientId      = res.data.formData.AuthClientId;
-      const AuthClientSecret  = res.data.formData.AuthClientSecret;
-      const AuthToken         = res.data.formData.AuthToken;
-      const AuthTokenExp      = res.data.formData.AuthTokenExp;
-
-      //No connection found
-      if (D365ResourceURL == '' || AuthHostURL == '' || AuthClientId == '' || AuthClientSecret == '')
-      {
-          var noConnectionFound = "No connection found.\n Please enter a valid connection and try again."
-          setError(noConnectionFound);
-          throw error(noConnectionFound);
-      }
-
-      const currentTimeSeconds = new Date().getTime() / 1000;
-
-      var userAuthToken;
-
-      //Check auth token, if expired get new token and update token in data base (updateUserConnectionToken)
-      if (AuthTokenExp == '' || AuthTokenExp < currentTimeSeconds)
-      {
-          //Set up new axios client based on connection info
-           var formdata = new FormData();
-           formdata.append("resource", D365ResourceURL);
-           formdata.append("client_id", AuthClientId);
-           formdata.append("client_secret", AuthClientSecret);
-           formdata.append("grant_type", "client_credentials")
-
-           const dynamicRes = await axios({
-             method: "post",
-             url: AuthHostURL,
-             data: formdata,
-             headers: { "Content-Type": "multipart/form-data" },
-           })
-
-           userAuthToken = dynamicRes.data.access_token;
-
-           var updatedTokenExp = +currentTimeSeconds + +dynamicRes.data.expires_in;
-
-           const updateUserConnectionToken = {email: profile.user.email, AuthTokenExp: updatedTokenExp, AuthToken: userAuthToken};
-
-           const updatedTokenRes = await client.post('/updateUserConnectionToken', updateUserConnectionToken, {
-            headers: {
-              Accept: 'application/json',
-              authorization: `JWT ${profile.token}`,
-            },
-          });
-
-      }
-      else
-      {
-        userAuthToken = AuthToken;
-      }
+      var dataAreaId = await helpers.getDataAreaId(salesOrderNumber.SalesOrderNumber, userAuthInfo);
 
       //Make call to D365 to get sales order header information
-      const deleteSalesOrder = D365ResourceURL + "/data/SalesOrderHeadersV2(SalesOrderNumber= '" + salesOrderNumber.SalesOrderNumber + "', dataAreaId='" + legalEntity.LegalEntity + "')"
+      const deleteSalesOrder = userAuthInfo.D365ResourceURL + "/data/SalesOrderHeadersV2(SalesOrderNumber= '" + salesOrderNumber.SalesOrderNumber + "', dataAreaId='" + dataAreaId + "')"
 
-      userAuthToken = "Bearer " + userAuthToken;
+      userAuthToken = "Bearer " + userAuthInfo.userAuthToken;
 
       var statusError = false;
 
@@ -227,14 +157,6 @@ const DeleteSalesOrder = () => {
         placeholder='Sales Order number'
         autoCapitalize='none'
       />
-      {profile.user.offlineMode ? null : (
-      <FormInput
-        value={LegalEntity}
-        onChangeText={value => handleOnChangeSite(value, 'LegalEntity')}
-        label='Legal Entity'
-        placeholder='Legal Entity'
-        autoCapitalize='none'
-      />)}
       <FormSubmitButton onPress={submitForm} title='Delete sales order' />
 
       <Divider width={10} color={'#f0f3f5' }/>

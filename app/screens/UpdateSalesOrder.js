@@ -37,16 +37,6 @@ const UpdateSalesOrder = () => {
     setLineNumber({ ...lineNumber, [fieldName]: value });
   };
 
-  const [legalEntity, setLegalEntity] = useState({
-    LegalEntity: '',
-  });
-
-  const { LegalEntity } = legalEntity;
-
-  const handleOnChangeLegalEntity = (value, fieldName) => {
-    setLegalEntity({ ...legalEntity, [fieldName]: value });
-  };
-
   const [error, setError] = useState('');
 
   const animation = useRef(new Animated.Value(0)).current;
@@ -212,7 +202,7 @@ const UpdateSalesOrder = () => {
         ItemNumber: line.data.value[0].ItemNumber,
         LineNumber: line.data.value[0].LineNumber,
         OrderedSalesQuantity: line.data.value[0].OrderedSalesQuantity.toString(),
-        LegalEntity: legalEntity.LegalEntity,
+        LegalEntity: line.data.value[0].dataAreaId,
         InventoryLotId: line.data.value[0].InventoryLotId,
       }
 
@@ -257,14 +247,6 @@ const UpdateSalesOrder = () => {
         placeholder='Line creation sequence number'
         autoCapitalize='none'
       />
-      {profile.user.offlineMode ? null : (
-        <FormInput
-        value={LegalEntity}
-        onChangeText={value => handleOnChangeLegalEntity(value, 'LegalEntity')}
-        label='Legal Entity'
-        placeholder='Legal entity'
-        autoCapitalize='none'
-      />)}
       <FormSubmitButton onPress={submitForm} title='Update order line' />
 
       <Divider width={10} color={'#f0f3f5' }/>

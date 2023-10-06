@@ -108,7 +108,11 @@ const LoginForm = () => {
   const submitForm = async () => {
     if (isValidForm()) {
       try {
+        console.log(userInfo);
+
         const res = await client.post('/sign-in', { ...userInfo });
+
+        console.log(res.data);
 
         if (res.data.success) 
         {
