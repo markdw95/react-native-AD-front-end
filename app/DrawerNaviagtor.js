@@ -77,7 +77,7 @@ const DrawerNavigator = () => {
         headerTitle: '',
         headerTintColor: COLORS.primary,
         headerRight: () => (
-          <View style={{right: 50}}>
+          <View style={{right: 85}}>
           
             <View
               style={{
@@ -109,10 +109,6 @@ const DrawerNavigator = () => {
         ),
       }}
       drawerContent={props => <CustomDrawer {...props} />}
-      drawerContentOptions= {{
-         activeTintColor :COLORS.primary,
-         inactiveTintColor :COLORS.dark,
-      }}
     >
       <Drawer.Screen component={Home} name='Home' />
       {profile.user.offlineMode ? null : (<Drawer.Screen component={Connection} name='Connection'/>)}

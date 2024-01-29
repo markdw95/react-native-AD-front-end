@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Dimensions, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Dimensions } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import { Container, Cover, Image, CSTitle, Content, Wrapper, Caption, Subtitle } from '../components/Card_Styles';
@@ -7,6 +7,7 @@ import FormContainer from '../components/FormContainer';
 import FormSubmitButton from '../components/FormSubmitButton';
 import helpers from '../helpers/helper';
 import { useLogin } from '../context/LoginProvider';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   CardButton,

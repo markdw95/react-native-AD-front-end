@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, AsyncStorage } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import client from '../api/client';
 import { useLogin } from '../context/LoginProvider';
 import { Divider  } from 'react-native-elements'
@@ -7,6 +7,7 @@ import { isValidEmail, isValidObjField, updateError } from '../utils/methods';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginForm = () => {
   const { setIsLoggedIn, setProfile } = useLogin();
@@ -65,7 +66,7 @@ const LoginForm = () => {
         }
       } catch(e) {
         // error reading value
-        console.log("Error on load");
+        //console.log("Error on load");
       }
 
   }
@@ -86,7 +87,7 @@ const LoginForm = () => {
     try {
       await AsyncStorage.setItem('jwtToken', value)
     } catch (e) {
-      console.log("Failed save");
+      //console.log("Failed save");
     }
   }
 
@@ -108,18 +109,18 @@ const LoginForm = () => {
   const submitForm = async () => {
     if (isValidForm()) {
       try {
-        console.log(userInfo);
+        //console.log(userInfo);
 
         const res = await client.post('/sign-in', { ...userInfo });
 
-        console.log(res.data);
+        //console.log(res.data);
 
         if (res.data.success) 
         {
           //Set updated jwtToken in Async Storage
           await storeData(res.data.token);
 
-          console.log(res.data);
+          //console.log(res.data);
 
           setUserInfo({ email: '', password: '' });
           setProfile(res.data);

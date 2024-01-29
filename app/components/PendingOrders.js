@@ -7,8 +7,7 @@ import {
   Text,
   FlatList,
   ScrollView,
-  SafeAreaView,
-  AsyncStorage
+  SafeAreaView
 } from 'react-native';
 import client from '../api/client';
 import { Divider  } from 'react-native-elements'
@@ -23,6 +22,7 @@ import COLORS from "../config/COLORS";
 import SPACING from "../config/SPACING";
 import helpers from '../helpers/helper';
 import { string } from 'yup';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get('window');
 

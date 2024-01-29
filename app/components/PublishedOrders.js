@@ -76,7 +76,7 @@ const PublishedOrders = ({route}) => {
             <Text style={styles.groupHeaderText}>Created orders</Text>
             {createdOrders.map((item) => {
               return (
-              <View style={styles.row}>
+              <View style={styles.row} key={item}>
                 <Text style={styles.rowText}>Order {item.SalesOrderNumber}: {item.message}</Text>
               </View>
               );
@@ -87,7 +87,7 @@ const PublishedOrders = ({route}) => {
           <Text style={styles.groupHeaderText}>Partially created orders</Text>
             {partiallyCreatedOrders.map((item) => {
               return (
-              <View style={styles.row}>
+              <View style={styles.row} key={item}>
                 <Text style={styles.rowText}>Order {item.SalesOrderNumber}: {item.message}</Text>
               </View>
               );
@@ -98,7 +98,7 @@ const PublishedOrders = ({route}) => {
           <Text style={styles.groupHeaderText}>Failed orders</Text>
             {failedOrders.map((item) => {
               return (
-              <View style={styles.row}>
+              <View style={styles.row} key={item}>
                 <Text style={styles.rowText}>Order {item.SalesOrderNumber}: {item.message}</Text>
               </View>
               );

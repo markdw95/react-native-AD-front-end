@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
+import { View, Text, Animated, Dimensions } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -11,6 +11,7 @@ import client from '../api/client';
 import axios from 'axios';
 import PendingOrders from '../components/PendingOrders';
 import helpers from '../helpers/helper';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get('window');
 

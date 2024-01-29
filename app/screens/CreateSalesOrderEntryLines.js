@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions, ScrollView } from 'react-native';
 import { Card, ListItem, Button, Icon, Divider  } from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
 import FormContainer from '../components/FormContainer';
@@ -12,6 +12,7 @@ import axios from 'axios';
 import { Dropdown } from 'react-native-element-dropdown';
 import FormSubmitRowButton from '../components/FormSubmitRowButton';
 import helpers from '../helpers/helper';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get('window');
 
@@ -263,7 +264,7 @@ const CreateSalesOrderEntryLines = ({route}) => {
 
         {salesLines.length != 0 ? salesLines.map((line) => {
           return (
-            <View style={styles.container}>
+            <View style={styles.container} key={line}>
               <Dropdown
               style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}

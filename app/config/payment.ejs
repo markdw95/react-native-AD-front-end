@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7WN02KKPVY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7WN02KKPVY');
+</script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AcquireDynamics</title>
+    <link rel="stylesheet" href="dist/css/nav.css">
+    <link rel="stylesheet" href="dist/css/style.css">
+        <!-- Custom styles for this template-->
+    <link href="dist/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+    <link rel="icon" href="/LandingPage_1.0/images/clear-tabIcon.png">
+</head>
+<body class="is-boxed has-animations">
+    <div class="body-wrap boxed-container">
+        <header class="site-header">
+            <div class="container">
+
+            <section class="top-nav">
+                <div>
+                    <a href="index.html"><img class="header-logo-image" src="dist/images/clear-tabIcon.png" alt="Header Logo"></a>
+                </div>
+                <input id="menu-toggle" type="checkbox" />
+                <label class='menu-button-container' for="menu-toggle">
+                <div class='menu-button'></div>
+              </label>
+                <ul class="menu">
+                  <li><a class="nav-link"  href="guide.html">Getting Started</a></li>
+                  <li><a class="nav-link" href="roadmap.html">Road Map</a></li>
+                  <li><a class="nav-link" href="video.html">Videos</a></li>
+                  <li><a class="nav-link" href="about.html">About Us</a></li>
+                  <li><a class="nav-link" href="/payment">Enable Account</a></li>
+                </ul>
+              </section>
+        </header>
+
+        <main>
+            
+
+            <section class="cta section mt-3">
+                <div class="features-inner section-inner has-bottom-divider">
+                    <div class="features-header text-center">
+                            <h2 class="section-title mb-4">Enable your account</h2>
+                            <h3><%= message %></h3>
+                            <br>
+
+<!--Pricing-->
+<div class="section pricing-section pb-5">
+    <div class="container">
+      <div class="row pricing-table">
+        <div class="pricing-item col-12 col-lg-4 mb-5">
+          <div class="pricing-item-inner shadow-lg p-4 rounded h-100">
+            <div class="pricing-item-header text-center">
+              <h3 class="mb-0 pricing-plan-name text-primary font-weight-bold">Download the App</h3>
+              <h4 class="price display-4 font-weight-light"><span class="price-currency">$</span><span class="price-number">0</span></h4>
+              <div><a class="btn btn-primary theme-btn-primary" href="mailto:support@acquiredynamics.com">Contact Us</a></div>
+            </div><!--//pricing-item-header-->
+            <hr>
+            <div class="pricing-item-body">
+              <ul class="list-unstyled">
+                <li class="mb-2"><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Download the free application on iPhone or Andorid</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Create pending orders locally and familiarize yourself with the UI</li>
+                <li class=""><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Request new features to be added to the Feature Road Map</li>
+                <li class=""><i class="fas fa-times mr-2" style="color:lightcoral"></i>Create real time orders to D365</li>
+                <li class=""><i class="fas fa-times mr-2" style="color:lightcoral"></i>Publish pending orders to D365</li>
+              </ul>
+            </div><!--//pricing-item-body-->
+          </div><!--//pricing-item-inner-->
+        </div><!--//pricing-item-->
+        
+        <div class="pricing-item pricing-item-highlighted col-12 col-lg-4 mb-5">
+          <div class="pricing-item-inner shadow-lg p-4 rounded-bottom position-relative h-100">
+            <div class="pricing-highlight rounded-top position-absolute text-center p-2">
+            </div>
+            <div class="pricing-item-header text-center">
+              <h3 class="mb-0 pricing-plan-name text-primary font-weight-bold">Single User License</h3>
+              <h4 class="price display-4 font-weight-light"><span class="price-currency">$</span><span class="price-number">50</span></h4>
+              <div><button class="btn btn-primary" onclick="goToCheckOut()">Subscribe for $50/Month</button></div>
+            </div><!--//pricing-item-header-->
+            <hr>
+            <div class="pricing-item-body">
+              <ul class="list-unstyled">
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Create, update, delete sales orders in real time</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Utilize offline mode & pending orders to create orders locally and publish when finalized</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Pull reference data to allow for quick data look ups</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Replace current orders for customers with the push of a button</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Manage your purchase orders in real time</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2 " style="color:lightgreen"></i>Look up all your relevent data in D365.</li>
+                
+              </ul>
+            </div><!--//pricing-item-body-->
+            <div><button class="btn btn-secondary"><a href="/cancelSubscription" style='color: white'>Cancel Active Subscription</a></button></div>
+          </div><!--//pricing-item-inner-->
+        </div><!--//pricing-item-->
+        
+        <div class="pricing-item col-12 col-lg-4 mb-lg-5">
+          <div class="pricing-item-inner shadow-lg p-4 rounded h-100">
+            <div class="pricing-item-header text-center">
+              <h3 class="mb-0 pricing-plan-name text-primary font-weight-bold">Multiple User Licenses</h3>
+              <h4 class="price display-4 font-weight-light"><span class=""></span><span class="">Scaled</span></h4>
+              <div><a class="btn btn-primary theme-btn-primary" href="mailto:support@acquiredynamics.com">Contact Us</a></div>
+            </div><!--//pricing-item-header-->
+            <hr>
+            <div class="pricing-item-body">
+              <ul class="list-unstyled">
+                <li class="mb-2"><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Scaled pricing model for multiple accounts </li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Discounts provided for purchases of multiple user licenses</li>
+                <li class="mb-2"><i class="fas fa-check-circle mr-2" style="color:lightgreen"></i>Multiple user sessions allows for greater security control and accesbilitiy</li>
+              </ul>
+            </div><!--//pricing-item-body-->
+          </div><!--//pricing-item-inner-->
+        </div><!--//pricing-item-->
+        
+      </div><!--//pricing-tabel-->
+    </div>
+  </div>
+  <!--End Pricing-->
+
+                        </div>
+                    </div>
+            </section>
+
+
+        </main>
+
+        <footer class="site-footer has-top-divider">
+            <div class="container">
+                <div class="site-footer-inner">
+                    <div class="brand footer-brand">
+                        <a href="#">
+							<img class="asset-light" src="dist/images/clear-tabIcon.png" alt="Logo">
+							<img class="asset-dark" src="dist/images/logo-dark.svg" alt="Logo">
+                        </a>
+                    </div>
+                    <ul class="footer-links list-reset">
+                        <li>
+                            <a href="mailto:support@acquiredynamics.com">Contact</a>
+                        </li>
+                        <li>
+                            <a href="about.html">About us</a>
+                        </li>
+                        <li>
+                            <a href="guide.html">FAQ's</a>
+                        </li>
+                    </ul>
+                    <ul class="footer-social-links list-reset"></ul>
+                    <div class="footer-copyright">&copy; 2023 AcquireDynamics, all rights reserved</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+     <!-- Stripe -->
+     <script src="https://js.stripe.com/v3/"></script>
+
+     <!-- Check out -->
+     <script>
+         var stripe = Stripe('<%= STRIPE_PUBLIC_KEY%>');
+
+         function goToCheckOut(){
+           stripe.redirectToCheckout({
+               // Make the id field from the Checkout Session creation API response
+               // available to this file, so you can provide it as parameter here
+               // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+               sessionId: '<%= session %>'
+             }).then(function (result) {
+               // If `redirectToCheckout` fails due to a browser or network
+               // error, display the localized error message to your customer
+               // using `result.error.message`.
+             });
+         }
+     </script>
+
+</body>
+</html>

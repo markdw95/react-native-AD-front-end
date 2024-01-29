@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Dimensions, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
 import { Divider  } from 'react-native-elements'
 import { useLogin } from '../context/LoginProvider';
 import FormContainer from '../components/FormContainer';
@@ -11,6 +11,7 @@ import client from '../api/client';
 import { useNavigation } from "@react-navigation/native";
 import helpers from '../helpers/helper';
 import referenceGetter from '../helpers/referenceGetter';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get('window');
 
