@@ -4301,11 +4301,6 @@ let targetWordle = [
     "https://youtu.be/pTwjIVkuJkw"
   ],
   [
-    "Server missing one essential liquid",
-    "ratey",
-    "https://youtu.be/pTwjIVkuJkw"
-  ],
-  [
     "Be left with large and ultimately unlovely stomach",
     "belly",
     "https://youtu.be/q8qWPTDnMNM"
@@ -22380,25 +22375,25 @@ let shareText = "";
 startInteraction()
 
  function startInteraction() {
-//   fetch('https://cryptic-wordle-13db76bdac59.herokuapp.com/') //Set to backend URL
-//   .then(response => {
-//     if (!response.ok) {
-//       throw new Error('Network response was not ok');
-//     }
-//     return response.json(); // Assuming the response is in JSON format
-//   })
-//   .then(data => {
-//     // Process the fetched data
-//     //Override variable to allow site to work if backend is down
-//     targetWord = data[1];
-//     clueData = data[0];
-//     urlData = data[2];
-//     console.log(data);
-//   })
-//   .catch(error => {
-//     // Handle any errors
-//     console.error('Error:', error);
-//   });
+  fetch('https://cryptic-wordle-13db76bdac59.herokuapp.com/') //Set to backend URL
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); // Assuming the response is in JSON format
+  })
+  .then(data => {
+    // Process the fetched data
+    //Override variable to allow site to work if backend is down
+    targetWord = data[1];
+    clueData = data[0];
+    urlData = data[2];
+    console.log(data);
+  })
+  .catch(error => {
+    // Handle any errors
+    console.error('Error:', error);
+  });
 
   clue.textContent = clueData
   document.addEventListener("click", handleMouseClick)
